@@ -60,6 +60,7 @@
     .formula { overflow-x: auto; margin: 10px 0; padding: 11px 13px; border: 1px solid var(--line); border-radius: 7px; background: #0b1014; color: #fff2c7; font-family: Consolas, monospace; white-space: nowrap; }
 
     .layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 20px; align-items: start; }
+    .layout > * { min-width: 0; }
     .panel { border: 1px solid var(--line); border-radius: var(--radius); background: rgba(17, 23, 28, .94); box-shadow: 0 18px 60px rgba(0,0,0,.25); }
     .controls { position: sticky; top: 16px; overflow: hidden; }
     .panel-head { padding: 18px 20px; border-bottom: 1px solid var(--line); background: linear-gradient(90deg, var(--accent-soft), transparent); }
@@ -108,11 +109,11 @@
     .stat span { display: block; color: var(--muted); font-size: 11px; }
     .stat strong { display: block; margin-top: 8px; font-size: 17px; }
 
-    .results { overflow: hidden; }
+    .results { overflow: hidden; min-width: 0; max-width: 100%; }
     .result-head { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--line); }
     .result-head h2 { margin: 0; font-size: 15px; }
     .result-head span { color: var(--muted); font-size: 12px; }
-    .table-wrap { overflow: auto; max-height: calc(100vh - 190px); }
+    .table-wrap { overflow: auto; width: 100%; max-width: 100%; max-height: calc(100vh - 190px); }
     table { border-collapse: separate; border-spacing: 0; min-width: 3900px; width: 100%; }
     th, td { min-width: 132px; height: 56px; padding: 9px 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: center; }
     th { position: sticky; top: 0; z-index: 2; background: #1a2229; color: #dbe2e6; font-size: 11px; line-height: 1.4; }
@@ -154,7 +155,9 @@
       .dialog-head { padding: 15px 16px; }
       .dialog-body { padding: 16px; font-size: 12px; }
 
-      .layout { gap: 14px; }
+      .layout { display: block; width: 100%; }
+      .controls { position: static; width: 100%; margin-bottom: 14px; }
+      .layout > section { width: 100%; min-width: 0; overflow: hidden; }
       .panel { border-radius: 10px; }
       .panel-head { padding: 15px 16px; }
       .section { padding: 15px 16px; }
@@ -176,8 +179,9 @@
       .result-head > div:first-child { margin-bottom: 2px; }
       .view-toggle { display: grid; width: 100%; grid-auto-flow: column; grid-auto-columns: 1fr; }
       .view-toggle button { width: 100%; height: 36px; padding: 0 6px; }
-      .table-wrap { max-height: 62vh; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
-      table { font-size: 12px; }
+      .results { width: 100%; max-width: 100%; contain: inline-size; }
+      .table-wrap { display: block; width: 100%; max-width: 100%; overflow-x: auto; overflow-y: auto; max-height: 62vh; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
+      #resultTable { width: max-content; max-width: none; font-size: 12px; }
       th, td { min-width: 112px; height: 52px; padding: 8px; }
       th:first-child, td:first-child { min-width: 104px; }
       td:first-child { padding-left: 10px; }
@@ -325,7 +329,7 @@
         <h3>破甲词条的击破弹</h3>
         <p>破甲会把命中的护甲按低一级品质选取 M，再计算：</p>
         <div class="formula">血量伤害 = a − x ÷ 破甲后的 M</div>
-        <p>橙品质的破甲仅在命中上胸或腹部护甲时生效。</p>
+        <p>橙品质只有单伤词条，不能拥有双伤组合；破甲仅在命中上胸或腹部护甲时生效。</p>
 
         <h3>肉伤词条的击破弹</h3>
         <ul>
@@ -393,6 +397,7 @@
       const quality=document.querySelector("#gunQuality").value;
       const noAffix={name:"无词条",effects:[],armorBreak:false,flesh:false};
       if(quality==="紫") return [noAffix];
+      if(quality==="橙" && affixMode!=="single") return [noAffix, ...columnsForQuality(singleColumns,quality)];
       if(affixMode==="compare") return [];
       return [noAffix, ...columnsForQuality(affixMode==="single"?singleColumns:doubleColumns,quality)];
     }
@@ -758,8 +763,20 @@
       render();
     });
 
+    function updateAffixAvailability(){
+      const quality=document.querySelector("#gunQuality").value;
+      const orange=quality==="橙", purple=quality==="紫";
+      document.querySelector("#doubleAffix").disabled=orange||purple;
+      document.querySelector("#compareAffix").disabled=orange||purple;
+      document.querySelector("#singleAffix").disabled=purple;
+      if((orange||purple)&&affixMode!=="single") affixMode="single";
+      const buttonIds={single:"singleAffix",double:"doubleAffix",compare:"compareAffix"};
+      Object.values(buttonIds).forEach(id=>document.querySelector(`#${id}`).classList.toggle("active",id===buttonIds[affixMode]));
+    }
+
     document.querySelector("#damageRange").addEventListener("change",render);
     document.querySelector("#gunQuality").addEventListener("change",()=>{
+      updateAffixAvailability();
       document.querySelector("#weaponSummary").textContent=`${weaponConfig.name} · ${document.querySelector("#gunQuality").value}`;
       render();
     });
@@ -804,7 +821,7 @@
           const gapText=gap===0?"无差距":gap>0?`双伤减少 ${formatMetric(gap)}`:`单伤减少 ${formatMetric(-gap)}`;
           return `<tr><td><span class="armor ${armorClass(row.quality)}">${row.quality}甲 · ${row.plates}格</span></td><td class="${singleBest}">${formatMetric(singleMin)}</td><td>${singleNames}</td><td class="${doubleBest}">${formatMetric(doubleMin)}</td><td>${doubleNames}</td><td>${gapText}</td></tr>`;
         }).join("");
-        document.querySelector("#resultTable").style.minWidth="1200px";
+        document.querySelector("#resultTable").style.minWidth=window.innerWidth<=600?"900px":"1200px";
         return;
       }
       const columns=activeColumns();
@@ -818,7 +835,7 @@
         const measured=row.values.map(metricValue), min=Math.min(...measured);
         return `<tr><td><span class="armor ${armorClass(row.quality)}">${row.quality}甲 · ${row.plates}格</span></td>${measured.map(v=>`<td class="${v===min?"best":""}">${formatMetric(v)}</td>`).join("")}</tr>`;
       }).join("");
-      document.querySelector("#resultTable").style.minWidth=viewMode==="best"?"700px":"3900px";
+      document.querySelector("#resultTable").style.minWidth=window.innerWidth<=600?(viewMode==="best"?"620px":"3200px"):(viewMode==="best"?"700px":"3900px");
     }
 
     function render(){
@@ -868,6 +885,8 @@
     }
     document.querySelector("#calculate").addEventListener("click",render);
     function setAffixMode(mode){
+      const quality=document.querySelector("#gunQuality").value;
+      if(quality==="紫" || (quality==="橙" && mode!=="single")) return;
       affixMode=mode;
       const buttonIds={single:"singleAffix",double:"doubleAffix",compare:"compareAffix"};
       Object.values(buttonIds).forEach(id=>document.querySelector(`#${id}`).classList.toggle("active",id===buttonIds[mode]));
@@ -891,6 +910,7 @@
       if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom) mechanicsDialog.close();
     });
 
+    updateAffixAvailability();
     applyRandomPreset("normal");
     populateWeapons(BUILT_IN_WEAPONS);
     render();
