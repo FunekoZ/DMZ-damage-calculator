@@ -69,6 +69,9 @@
     .section { padding: 18px 20px; border-bottom: 1px solid var(--line); }
     .section:last-child { border-bottom: 0; }
     .section-title { margin: 0 0 13px; font-size: 12px; color: var(--accent); letter-spacing: .08em; }
+    .section-title-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 13px; }
+    .section-title-row .section-title { margin: 0; }
+    .section-title-row .recommend { width: auto; height: 28px; padding: 0 9px; border-radius: 5px; font-size: 11px; }
     .field { display: grid; gap: 7px; margin-bottom: 13px; }
     .field:last-child { margin-bottom: 0; }
     label { color: #cbd2d7; font-size: 12px; }
@@ -158,7 +161,19 @@
     .optimal-row.sequence.pair .optimal-affix:last-child { grid-column: 2; }
     .optimal-row.sequence.pair .optimal-affix:last-child::before { content: "+"; }
     .optimal-row.group-start:not(:first-child), .optimal-row.pair:not(:first-child) { margin-top: 9px; }
-    .affix-common, .optimal-row.sequence.pair .optimal-affix:first-child { color: #e99a9a; font-weight: 700; }
+    .affix-common::before, .optimal-row.sequence.pair .optimal-affix:first-child::before { margin-right: .4em; color: #fff; font-weight: 900; content: "·"; }
+    .probability-note { display: block; color: var(--muted); font-size: 10px; font-weight: 600; }
+    .probability-note .note-affixes.more { color: #8fc7df; }
+    .probability-note .note-affixes.less { color: #e99a9a; }
+    .probability-example { display: block; margin-top: 2px; }
+    .reason-marker { display: inline-block; position: relative; margin-left: 2px; vertical-align: text-top; }
+    .reason-trigger { display: inline-grid; width: 7px; height: 7px; padding: 0; border: 1px solid currentColor; border-radius: 50%; background: transparent; color: inherit; place-items: center; cursor: pointer; font-size: 4px; font-weight: 800; line-height: 1; transform: translateY(-3px); }
+    .reason-bubble { display: none; position: absolute; right: -8px; bottom: calc(100% + 5px); z-index: 20; width: max-content; max-width: 260px; padding: 6px 8px; border: 1px solid var(--line-bright); border-radius: 6px; background: #202a31; color: var(--text); box-shadow: 0 6px 20px rgba(0,0,0,.45); font-size: 10px; font-weight: 600; line-height: 1.45; text-align: left; white-space: normal; }
+    .reason-marker.open .reason-bubble { display: block; }
+    .note-separator { display: inline-block; margin: 0 12px; color: var(--muted); }
+    .note-separator.leading { margin-left: 0; }
+    .probability-notes { display: grid; gap: 2px; grid-column: 1 / -1; margin-top: 5px; text-align: center; }
+    .probability-affix { color: #e99a9a; }
     .loading { opacity: .65; pointer-events: none; }
     .error { display: none; margin-top: 10px; color: #ff8c8c; font-size: 12px; }
 
@@ -270,7 +285,6 @@
                 <option>Type19 (步枪)</option>
                 <option>Type19 (单点)</option>
               </select>
-              <button id="recommendPreset" class="recommend" type="button">推荐命中预设</button>
             </div>
           </div>
           <div class="field">
@@ -290,23 +304,26 @@
           </div>
         </section>
         <section class="section">
-          <h3 class="section-title">主要命中</h3>
-          <div class="field"><label for="mainHit">主要命中部位 / 场景</label><select id="mainHit"><option value="lower_arm" selected>下臂 · 正面对枪</option><option value="upper_arm">上臂 · 侧面偷袭</option><option value="upper_chest">上胸 · 背面偷袭</option><option value="legs">腿部 · 专业修脚</option><option value="head">头部 · 开了直说</option></select></div>
+          <div class="section-title-row">
+            <h3 class="section-title">主要命中</h3>
+            <button id="recommendPreset" class="recommend" type="button">推荐命中预设</button>
+          </div>
+          <div class="field"><label for="mainHit">主要命中部位 / 场景</label><select id="mainHit"><option value="lower_arm" selected>下臂 / 正面对枪</option><option value="upper_arm">上臂 / 侧面偷袭</option><option value="upper_chest">上胸 / 背面偷袭</option><option value="head">头部 / 掩体对狙</option><option value="legs">腿部 / 专业修脚</option></select></div>
         </section>
         <section class="section">
           <h3 class="section-title">随机命中</h3>
           <div class="field">
             <label for="randomPreset">随机命中预设</label>
             <select id="randomPreset">
-              <option value="normal" selected>常规对枪 · 1枪上胸</option>
-              <option value="crouch">敌人下蹲 · 2枪腿部 + 1枪腹部</option>
-              <option value="headshot">偶尔爆头 · 1枪上胸 + 1枪头部</option>
-              <option value="tapfire">长枪单点 · 1枪上胸 + 1枪上臂</option>
+              <option value="normal" selected>常规对枪 / 上胸×2</option>
+              <option value="headshot">偶尔爆头 / 上胸×1 + 头部×1</option>
+              <option value="tapfire">长枪单点 / 上胸×1 + 上臂×1</option>
+              <option value="crouch">敌人下蹲 / 腿部×2 + 腹部×1</option>
               <option value="custom">自定义</option>
             </select>
           </div>
           <div id="randomInputs"></div>
-          <p class="hint">每个部位选择 0 / 1 / 2 枪。随机子弹会插入单次击杀序列，顺序参与破甲计算。</p>
+          <p class="hint">每个部位选择 0 / 1 / 2 枪。随机命中会插入单次击杀序列；多弹丸枪械同一次开火的弹丸默认命中同一部位。</p>
         </section>
         <section class="section">
           <div class="calculate-row">
@@ -320,7 +337,7 @@
       <section>
         <div class="summary">
           <div class="stat"><span>当前枪械</span><strong id="weaponSummary">等待载入</strong><em id="rangeSummary" class="stat-detail">等待载入射程</em></div>
-          <div class="stat"><span>主要命中部位</span><strong id="sceneSummary">下臂</strong></div>
+          <div class="stat"><span>主要命中部位 / 场景</span><strong id="sceneSummary">下臂 / 正面对枪</strong></div>
           <div class="stat"><span>随机命中</span><strong id="randomSummary">无</strong></div>
           <div class="stat"><span>计算方式</span><strong id="metricSummary">击杀枪数</strong></div>
         </div>
@@ -338,7 +355,7 @@
             </div>
             <div class="view-toggle" aria-label="结果展示方式">
               <button id="bestView" class="active" type="button">最优词条</button>
-              <button id="allView" type="button">展示全部</button>
+              <button id="allView" type="button">总表</button>
             </div>
           </div>
           <div class="table-wrap"><table id="resultTable"><thead></thead><tbody></tbody></table></div>
@@ -414,7 +431,7 @@
   </main>
 
   <script>
-    const HEALTH = 100, ARMOR_PER_PLATE = 50, SAMPLES = 4000;
+    const HEALTH = 100, ARMOR_PER_PLATE = 50, SAMPLES = 5000;
     const levels = { 紫: 0, 橙: 1, 红: 2, 究: 3 };
     const qualityMultipliers = { "-3": .5, "-2": .7, "-1": .85, "0": 1, "1": 1.1, "2": 1.2, "3": 1.3 };
     const armors = [
@@ -427,9 +444,9 @@
       {quality:"究",plates:6,armorType:"全包",variant:"α"}
     ];
     const regionLabels = { upper_chest:"上胸", abdomen:"腹部", head:"头部", upper_arm:"上臂", lower_arm:"下臂", legs:"腿部" };
-    const sceneLabels = { lower_arm:"下臂", upper_arm:"上臂", upper_chest:"上胸", legs:"腿部", head:"头部" };
+    const sceneLabels = { lower_arm:"下臂 / 正面对枪", upper_arm:"上臂 / 侧面偷袭", upper_chest:"上胸 / 背面偷袭", head:"头部 / 掩体对狙", legs:"腿部 / 专业修脚" };
     const randomPresets = {
-      normal:{lower_arm:0,upper_arm:0,upper_chest:1,abdomen:0,legs:0,head:0},
+      normal:{lower_arm:0,upper_arm:0,upper_chest:2,abdomen:0,legs:0,head:0},
       crouch:{lower_arm:0,upper_arm:0,upper_chest:0,abdomen:1,legs:2,head:0},
       headshot:{lower_arm:0,upper_arm:0,upper_chest:1,abdomen:0,legs:0,head:1},
       tapfire:{lower_arm:0,upper_arm:1,upper_chest:1,abdomen:0,legs:0,head:0},
@@ -466,11 +483,12 @@
       if(quality==="紫") return [noAffix];
       if(quality==="橙" && affixMode!=="single") return [noAffix, ...columnsForQuality(singleColumns,quality)];
       if(affixMode==="compare") return [];
-      return [noAffix, ...columnsForQuality(affixMode==="single"?singleColumns:doubleColumns,quality)];
+      if(affixMode==="double") return columnsForQuality(doubleColumns,quality);
+      return [noAffix, ...columnsForQuality(singleColumns,quality)];
     }
 
     const randomInputs = document.querySelector("#randomInputs");
-    Object.entries(regionLabels).forEach(([key,label]) => randomInputs.insertAdjacentHTML("beforeend", `<label class="random-grid"><span>${label}</span><select data-random="${key}" disabled><option${key==="upper_chest"?"":" selected"}>0</option><option${key==="upper_chest"?" selected":""}>1</option><option>2</option></select></label>`));
+    Object.entries(regionLabels).forEach(([key,label]) => randomInputs.insertAdjacentHTML("beforeend", `<label class="random-grid"><span>${label}</span><select data-random="${key}"><option${key==="upper_chest"?"":" selected"}>0</option><option${key==="upper_chest"?" selected":""}>1</option><option>2</option></select></label>`));
 
     function seeded(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
     function shuffle(a,rng){ for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
@@ -493,15 +511,16 @@
       if(armorType==="躯干") return ["upper_chest","abdomen"].includes(region);
       throw new Error(`未知护甲类型：${armorType}`);
     }
-    function simulate(config,armorConfig,sequence,mainHit,column){
+    function simulate(config,armorConfig,sequence,mainHit,column,trace=false){
       const {quality:armorQuality,plates,armorType,health:startingHealth=HEALTH,immuneFirstShot=false}=armorConfig;
-      let health=startingHealth, armor=plates*ARMOR_PER_PLATE, shots=0, projectileIndex=0;
+      let health=startingHealth, armor=plates*ARMOR_PER_PLATE, shots=0, armorBreakIndex=-1;
       const orange=config.quality==="橙";
       while(health>0 && shots<1000){
         shots++;
+        const shotIndex=shots-1;
         const immuneShot=immuneFirstShot&&shots===1;
+        const region=shotIndex<sequence.length?sequence[shotIndex]:mainHit;
         for(let projectile=0;projectile<config.projectilesPerShot && health>0;projectile++){
-          const region=projectileIndex<sequence.length?sequence[projectileIndex]:mainHit; projectileIndex++;
           if(immuneShot) continue;
           const damage=shotDamage(config,region,column.effects);
           const armorBreakActive=column.armorBreak&&(!orange||["upper_chest","abdomen"].includes(region));
@@ -511,7 +530,7 @@
           if(armor>0 && armorCovers(armorType,region)){
             if(armorDamage<armor){ armor-=armorDamage; if(column.flesh) health-=damage*.1; }
             else {
-              const remaining=armor; armor=0;
+              const remaining=armor; armor=0; armorBreakIndex=shotIndex;
               let healthDamage=damage-remaining/(am*fleshArmorPenalty);
               if(column.flesh) healthDamage+=remaining*.1;
               health-=Math.max(0,healthDamage);
@@ -519,25 +538,46 @@
           } else health-=damage;
         }
       }
-      return shots;
+      return trace?{shots,armorBreakIndex,shotsUsed:shots}:shots;
     }
-    function expected(config,armorConfig,mainHit,randomHits,column,seed,projectileSlots){
+    function expected(config,armorConfig,mainHit,randomHits,column,seed,shotSlots){
       const estimate=simulate(config,armorConfig,[],mainHit,column);
-      const slots=projectileSlots??estimate*config.projectilesPerShot;
+      const slots=shotSlots??estimate;
       const pool=[]; Object.entries(randomHits).forEach(([r,count])=>{for(let i=0;i<count;i++)pool.push(r)});
-      if(!pool.length) return estimate;
-      if(pool.length>slots) throw new Error(`随机命中共 ${pool.length} 颗子弹，超过部分场景估算的 ${slots} 颗子弹`);
-      const rng=seeded(seed); let total=0;
-      for(let s=0;s<SAMPLES;s++){
+      if(!pool.length) return {average:estimate,minShots:estimate,minCount:SAMPLES,minPattern:[],shotCounts:{[estimate]:SAMPLES},shotPatterns:{[estimate]:[]}};
+      if(pool.length>slots) throw new Error("当前随机命中组合无法计算，请减少随机命中枪数或调整命中部位");
+      const rng=seeded(seed); let total=0, minShots=Infinity, minCount=0, minPattern=[], accepted=0, attempts=0, shotCounts=new Map(), shotPatterns=new Map();
+      const validationAttempts=SAMPLES*100, minimumValidSamples=1000;
+      while(accepted<SAMPLES){
+        if(attempts===validationAttempts&&accepted<minimumValidSamples) throw new Error("当前随机命中组合无法计算，请减少随机命中枪数或调整命中部位");
+        attempts++;
         const positions=shuffle([...Array(slots).keys()],rng).slice(0,pool.length).sort((a,b)=>a-b);
         const hits=shuffle([...pool],rng); const sequence=Array(slots).fill(mainHit);
         positions.forEach((p,i)=>sequence[p]=hits[i]);
-        total+=simulate(config,armorConfig,sequence,mainHit,column);
+        const trace=simulate(config,armorConfig,sequence,mainHit,column,true);
+        if(positions.some(position=>position>=trace.shotsUsed)) continue;
+        accepted++;
+        const shots=trace.shots;
+        total+=shots;
+        shotCounts.set(shots,(shotCounts.get(shots)||0)+1);
+        if(!shotPatterns.has(shots)) shotPatterns.set(shots,positions.map((position,i)=>({position,region:hits[i],armorBreakIndex:trace.armorBreakIndex,killShotIndex:trace.shots-1,used:true})));
+        if(shots<minShots){
+          minShots=shots; minCount=1;
+          minPattern=positions.map((position,i)=>({position,region:hits[i],armorBreakIndex:trace.armorBreakIndex,killShotIndex:trace.shots-1,used:true}));
+        }
+        else if(shots===minShots) minCount++;
       }
-      return total/SAMPLES;
+      return {average:total/accepted,minShots,minCount,minPattern,shotCounts:Object.fromEntries(shotCounts),shotPatterns:Object.fromEntries(shotPatterns)};
     }
-    function sharedProjectileSlots(config,armorConfig,mainHit,columns){
-      return Math.max(...columns.map(column=>simulate(config,armorConfig,[],mainHit,column)))*config.projectilesPerShot;
+    function columnCanAffectHits(column,mainHit,randomHits){
+      if(column.name==="无词条"||column.armorBreak||column.flesh) return true;
+      const hitRegions=new Set([mainHit,...Object.entries(randomHits).filter(([,count])=>count>0).map(([region])=>region)]);
+      return column.effects.some(effect=>[...hitRegions].some(region=>effectMultiplier(effect,region,"究")!==1));
+    }
+    function sharedShotSlots(config,armorConfig,mainHit,columns,randomHits){
+      const randomCount=Object.values(randomHits).reduce((sum,count)=>sum+count,0);
+      const baseSlots=Math.max(...columns.map(column=>simulate(config,armorConfig,[],mainHit,column)));
+      return baseSlots+randomCount;
     }
     const BUILT_IN_WEAPONS = [
   {
@@ -768,18 +808,24 @@
     let weapons = BUILT_IN_WEAPONS;
     let weaponConfig = validateWeapon(BUILT_IN_WEAPONS[0]);
     let lastResults = [];
+    let renderedColumns = [];
+    let excludedColumns = [];
     let viewMode = "best";
+    let viewAfterRender = null;
     let metricMode = "shots";
     let affixMode = "single";
 
     function validateWeapon(weapon){
       const regions=["head","upper_chest","abdomen","upper_arm","lower_arm","legs"];
-      if(!weapon || !weapon.name || !(weapon.shot_interval_ms>0)) throw new Error("枪械 JSON 的名称或射击间隔无效");
-      if(!weapon.region_multipliers || regions.some(r=>!(weapon.region_multipliers[r]>0))) throw new Error("枪械 JSON 缺少有效的部位倍率");
+      const shotInterval=Number(weapon?.shot_interval_ms);
+      const projectiles=weapon?.projectiles_per_shot===undefined?1:Number(weapon.projectiles_per_shot);
+      if(!weapon || typeof weapon.name!=="string" || !weapon.name.trim() || !Number.isFinite(shotInterval) || shotInterval<=0) throw new Error("枪械 JSON 的名称或射击间隔无效");
+      if(!Number.isInteger(projectiles)||projectiles<1) throw new Error("枪械 JSON 的每次开火弹丸数必须是大于等于 1 的整数");
+      if(!weapon.region_multipliers || regions.some(r=>!Number.isFinite(Number(weapon.region_multipliers[r]))||Number(weapon.region_multipliers[r])<=0)) throw new Error("枪械 JSON 缺少有效的部位倍率");
       const damageRanges=weapon.damage_ranges;
       if(!Array.isArray(damageRanges)||!damageRanges.length) throw new Error("枪械 JSON 缺少射程伤害配置");
-      if(damageRanges.some(range=>!(range.min>=0)||!(range.max>range.min)||!(range.damage>0))) throw new Error("枪械 JSON 的射程伤害配置无效");
-      return { name:String(weapon.name), shotIntervalMs:+weapon.shot_interval_ms, projectilesPerShot:+weapon.projectiles_per_shot||1, damageRanges, multipliers:Object.fromEntries(regions.map(r=>[r,+weapon.region_multipliers[r]])) };
+      if(damageRanges.some(range=>!Number.isFinite(Number(range.min))||!Number.isFinite(Number(range.max))||!Number.isFinite(Number(range.damage))||Number(range.min)<0||Number(range.max)<=Number(range.min)||Number(range.damage)<=0)) throw new Error("枪械 JSON 的射程伤害配置无效");
+      return { name:weapon.name.trim(), shotIntervalMs:shotInterval, projectilesPerShot:projectiles, damageRanges:damageRanges.map(range=>({min:Number(range.min),max:Number(range.max),damage:Number(range.damage)})), multipliers:Object.fromEntries(regions.map(r=>[r,Number(weapon.region_multipliers[r])])) };
     }
     function rangeLabel(range){
       const end=range.max;
@@ -787,7 +833,7 @@
     }
     function updateDamageRanges(){
       const select=document.querySelector("#damageRange");
-      select.innerHTML=weaponConfig.damageRanges.map((range,index)=>`<option value="${index}">${rangeLabel(range)}</option>`).join("");
+      select.replaceChildren(...weaponConfig.damageRanges.map((range,index)=>new Option(rangeLabel(range),String(index))));
     }
     function setWeapon(weapon){
       weaponConfig=validateWeapon(weapon);
@@ -796,10 +842,13 @@
       updateDamageRanges();
     }
     function populateWeapons(items){
-      // 保留原始 JSON 字段；setWeapon 负责且只负责一次标准化。
-      weapons=items;
+      const validated=items.map((weapon,index)=>{
+        try { return {raw:weapon,config:validateWeapon(weapon)}; }
+        catch(error){ throw new Error(`第 ${index+1} 个枪械配置无效：${error.message}`); }
+      });
+      weapons=validated.map(item=>item.raw);
       const select=document.querySelector("#weaponSelect");
-      select.innerHTML=weapons.map((weapon,index)=>`<option value="${index}">${weapon.name}</option>`).join("");
+      select.replaceChildren(...validated.map((item,index)=>new Option(item.config.name,String(index))));
       const selectedIndex=Math.min(+select.dataset.selectedIndex||0,weapons.length-1);
       select.value=String(selectedIndex);
       setWeapon(weapons[selectedIndex]);
@@ -851,8 +900,11 @@
       Object.values(buttonIds).forEach(id=>document.querySelector(`#${id}`).classList.toggle("active",id===buttonIds[affixMode]));
     }
 
+    let autoRenderTimer = 0;
     function autoRender(){
-      if(document.querySelector("#autoCalculate").checked) render();
+      if(!document.querySelector("#autoCalculate").checked) return;
+      clearTimeout(autoRenderTimer);
+      autoRenderTimer=setTimeout(render,500);
     }
 
     document.querySelector("#damageRange").addEventListener("change",autoRender);
@@ -863,10 +915,9 @@
     });
 
     function applyRandomPreset(presetName){
-      const custom=presetName==="custom";
       const preset=randomPresets[presetName];
       document.querySelectorAll("[data-random]").forEach(select=>{
-        select.disabled=!custom;
+        select.disabled=false;
         select.value=String(preset[select.dataset.random]);
       });
     }
@@ -875,27 +926,119 @@
       applyRandomPreset(event.target.value);
       autoRender();
     });
-    document.querySelectorAll("[data-random]").forEach(select=>select.addEventListener("change",autoRender));
+    document.querySelectorAll("[data-random]").forEach(select=>select.addEventListener("change",()=>{
+      document.querySelector("#randomPreset").value="custom";
+      autoRender();
+    }));
 
     function randomHits(){ return Object.fromEntries([...document.querySelectorAll("[data-random]")].map(el=>[el.dataset.random,+el.value])); }
     function armorClass(q){return {紫:"purple",橙:"orange",红:"red",究:"gold"}[q]}
 
-    function metricValue(shots){
-      return metricMode==="shots"?shots:(shots-1)*weaponConfig.shotIntervalMs;
-    }
-    function displayMetricValue(shots){
-      return metricMode==="shots"?Math.ceil(shots):(Math.ceil(shots)-1)*weaponConfig.shotIntervalMs;
+    function displayMetricValue(result){
+      return metricMode==="shots"?Math.ceil(result.average):(Math.ceil(result.average)-1)*weaponConfig.shotIntervalMs;
     }
     function formatMetric(value){
       return metricMode==="shots"?`${value}枪`:`${Number.isInteger(value)?value:value.toFixed(1)}ms`;
     }
-    function formatResult(shots){ return formatMetric(displayMetricValue(shots)); }
-    function isMinimum(value,min){ return Math.abs(value-min)<1e-9; }
-    const AFFIX_DISPLAY_PRIORITY = { "上半0.2":1, "上半0.1":1, "躯干0.2":2, "躯干0.1":2, "手臂0.2":3, "手臂0.1":3, "头部0.5":4, "头部0.3":5, "头部0.1":5, "腿部0.2":6, "腿部0.1":6, "破甲":7, "肉伤":8 };
+    function formatResult(result){ return formatMetric(displayMetricValue(result)); }
+    function strictMetricValue(result){
+      return metricMode==="shots"?result.minShots:(result.minShots-1)*weaponConfig.shotIntervalMs;
+    }
+    function formatTargetResult(shots){
+      return formatMetric(metricMode==="shots"?shots:(shots-1)*weaponConfig.shotIntervalMs);
+    }
+    function formatStrictResult(result){ return formatMetric(strictMetricValue(result)); }
+    function patternText(pattern,difference=0){
+      const usedHits=pattern?.filter(hit=>hit.used)||[];
+      if(!usedHits.length) return "";
+      const relevant=difference>0
+        ?usedHits.filter(hit=>hit.position===hit.killShotIndex)
+        :difference<0?usedHits.filter(hit=>hit.armorBreakIndex<0||hit.position<hit.armorBreakIndex):[];
+      if(relevant.length){
+        const groups=new Map();
+        relevant.forEach(({region})=>groups.set(region,(groups.get(region)||0)+1));
+        const [region,count]=[...groups].sort((a,b)=>b[1]-a[1])[0];
+        return difference>0
+          ?`例如：至少 ${count} 枪 ${regionLabels[region]} 最后一枪才命中，伤害溢出`
+          :`例如：至少 ${count} 枪 ${regionLabels[region]} 在破甲前就命中，吃到倍率`;
+      }
+      const groups=new Map();
+      usedHits.forEach(({position,region,armorBreakIndex,killShotIndex})=>{
+        const cause=position===killShotIndex?"last":position===armorBreakIndex?"break":"before";
+        const key=`${cause}|${region}`;
+        groups.set(key,(groups.get(key)||0)+1);
+      });
+      return [...groups].map(([key,count])=>{
+        const [cause,region]=key.split("|");
+        if(cause==="last") return `${count} 枪${regionLabels[region]}拖到最后一枪才命中`;
+        return `${cause==="break"?"破甲时":"破甲前"}命中 ${count} 枪${regionLabels[region]}`;
+      }).join("、");
+    }
+    function formatChancePercent(result,shots){
+      const count=result.shotCounts?.[shots]||0;
+      if(count===0) return "0";
+      if(count===SAMPLES) return "100";
+      const rounded=Number((count/SAMPLES*100).toFixed(1));
+      return String(Math.min(99.9,Math.max(.1,rounded)));
+    }
+    function shotChance(result,shots){ return (result.shotCounts?.[shots]||0)/SAMPLES; }
+    function shotNoteParts(result,shots,targetShots){
+      const chance=formatChancePercent(result,shots);
+      const difference=shots-targetShots;
+      const direction=difference>0?"多":"少";
+      return {text:`${chance}% 概率${direction} ${Math.abs(difference)} 枪`,pattern:patternText(result.shotPatterns?.[shots],difference)};
+    }
+    function shotNote(result,shots,targetShots){
+      const {text,pattern}=shotNoteParts(result,shots,targetShots);
+      return `${text}${pattern?`（如：${pattern}）`:""}`;
+    }
+    function reasonMarker(pattern){
+      return pattern?`<span class="reason-marker"><button class="reason-trigger" type="button" aria-label="查看原因" title="查看原因">?</button><span class="reason-bubble">${pattern}</span></span>`:"";
+    }
+    function allViewNote(result,plan,isRelevant){
+      if(!isRelevant) return "";
+      const outcomes=Object.keys(result.shotCounts||{}).map(Number).filter(shots=>shotChance(result,shots)>0);
+      if(outcomes.length<2) return "";
+      const baseline=outcomes.includes(plan.targetShots)?plan.targetShots:[...outcomes].sort((a,b)=>(result.shotCounts[b]||0)-(result.shotCounts[a]||0)||a-b)[0];
+      return outcomes
+        .filter(shots=>shots!==baseline)
+        .sort((a,b)=>a-b)
+        .map(shots=>{
+          const noteClass=shots>baseline?"more":"less";
+          const {text,pattern}=shotNoteParts(result,shots,baseline);
+          return `<span class="probability-note"><span class="note-affixes ${noteClass}">${text}</span>${reasonMarker(pattern)}</span>`;
+        })
+        .join("");
+    }
+    function cumulativeShotChance(result,shots){
+      return Object.entries(result.shotCounts||{}).reduce((sum,[shot,count])=>sum+(+shot<=shots?count:0),0)/SAMPLES;
+    }
+    function recommendationPlan(results,eligibleIndexes=results.map((_,index)=>index)){
+      const strictMin=Math.min(...eligibleIndexes.map(index=>results[index].minShots));
+      const strictIndexes=eligibleIndexes.filter(index=>results[index].minShots===strictMin);
+      const maxStrictChance=Math.max(...strictIndexes.map(index=>shotChance(results[index],strictMin)));
+      let targetShots=maxStrictChance>=.5?strictMin:strictMin+1;
+      const maxShots=Math.max(...eligibleIndexes.flatMap(index=>Object.keys(results[index].shotCounts||{}).map(Number)));
+      let candidates=[];
+      while(targetShots<=maxShots){
+        candidates=eligibleIndexes.filter(index=>cumulativeShotChance(results[index],targetShots)>=.5);
+        if(candidates.length) break;
+        targetShots++;
+      }
+      const bestChance=Math.max(...candidates.map(index=>cumulativeShotChance(results[index],targetShots)));
+      const recommended=candidates.filter(index=>Math.abs(cumulativeShotChance(results[index],targetShots)-bestChance)<1e-9);
+      const recommendedSet=new Set(recommended);
+      const unstable=candidates.filter(index=>!recommendedSet.has(index));
+      const rare=recommended.filter(index=>results[index].minShots<targetShots);
+      return {strictMin,targetShots,recommended,rare,unstable};
+    }
+    function uniqueIndexes(indexes){ return [...new Set(indexes)]; }
+    function uniqueNames(names){ return [...new Set(names)]; }
+    const AFFIX_DISPLAY_PRIORITY = { "无词条":0, "上半0.2":1, "上半0.1":1, "躯干0.2":2, "躯干0.1":2, "手臂0.2":3, "手臂0.1":3, "头部0.5":4, "头部0.3":5, "头部0.1":5, "腿部0.2":6, "腿部0.1":6, "破甲":7, "肉伤":8 };
     function sortAffixNames(names){ return [...names].sort((a,b)=>(AFFIX_DISPLAY_PRIORITY[a]||99)-(AFFIX_DISPLAY_PRIORITY[b]||99)); }
     function formatAffixName(name){ return name.split("+").join(" + "); }
     function groupOptimalNames(names){
-      const remaining=names.map(name=>name.split("+"));
+      const remaining=names.map(name=>sortAffixNames(name.split("+")));
       const grouped=[];
       while(true){
         const counts=new Map();
@@ -903,7 +1046,7 @@
           if(parts.length<2) return;
           parts.forEach(part=>counts.set(part,(counts.get(part)||0)+1));
         });
-        const common=[...counts].filter(([,count])=>count>=2).sort((a,b)=>b[1]-a[1]||(AFFIX_DISPLAY_PRIORITY[a[0]]||99)-(AFFIX_DISPLAY_PRIORITY[b[0]]||99))[0]?.[0];
+        const common=[...counts].filter(([,count])=>count>=2).sort((a,b)=>(AFFIX_DISPLAY_PRIORITY[a[0]]||99)-(AFFIX_DISPLAY_PRIORITY[b[0]]||99)||b[1]-a[1])[0]?.[0];
         if(!common) break;
         const matches=remaining.filter(parts=>parts.includes(common));
         grouped.push({common,alternatives:sortAffixNames(matches.map(parts=>parts.filter(part=>part!==common).join(" + ")))});
@@ -914,30 +1057,74 @@
     function optimalRow(items,classes=""){
       return `<span class="optimal-row count-${items.length}${classes?` ${classes}`:""}">${items.map((item,index)=>`<span class="optimal-affix${classes.includes("group-start")&&index===1?" plus":""}">${item}</span>`).join("")}</span>`;
     }
-    function formatOptimalNames(names){
-      if(names.includes("无词条")) return `<span class="optimal-affixes">${optimalRow(["无需词条，无负面即可"],"single-only")}</span>`;
-      const {grouped,regular}=groupOptimalNames(names), blocks=[], singleAffixes=[];
+    function markProbability(text,marked){ return marked?`<span class="probability-affix">${text}</span>`:text; }
+    function combinationInSet(common,alternative,names){
+      return names.has(`${common}+${alternative}`)||names.has(`${alternative}+${common}`);
+    }
+    function unstableEntry(name,result,targetShots,column){
+      const shots=Object.keys(result.shotCounts||{}).map(Number).filter(shots=>shots>targetShots&&shotChance(result,shots)>0).sort((a,b)=>a-b)[0];
+      return shots===undefined?null:{name,result,shots,difference:shots-targetShots,recommendation:true};
+    }
+    function groupProbabilityNotes(entries,targetShots){
+      const groups=new Map();
+      entries.forEach(({name,result,shots,difference,recommendation})=>{
+        if(!result) return;
+        const chance=formatChancePercent(result,shots);
+        const direction=difference>0?"多":"少";
+        const suffix=difference>0?(recommendation?"，劣于同等词条":"，主要推荐"):"，优于同等词条";
+        const pattern=patternText(result.shotPatterns?.[shots],difference);
+        const key=`${chance}|${direction}|${Math.abs(difference)}|${suffix}|${pattern}`;
+        if(!groups.has(key)) groups.set(key,new Set());
+        groups.get(key).add(formatAffixName(name));
+      });
+      const rows=[];
+      groups.forEach((nameSet,key)=>{
+        const names=[...nameSet];
+        const [chance,direction,difference,suffix,pattern]=key.split("|");
+        const noteClass=direction==="多"?"more":"less";
+        const reason=reasonMarker(pattern);
+        const lines=[];
+        for(let i=0;i<names.length;i+=3) lines.push(names.slice(i,i+3));
+        return lines.forEach((line,index)=>{
+          const hasPrevious=index>0, hasNext=index<lines.length-1;
+          const prefix=hasPrevious?'<span class="note-separator leading">/</span>':"";
+          const lineNames=prefix+line.join('<span class="note-separator">/</span>');
+          const detail=hasNext||line.length===3?"":`<span class="note-separator">：</span>${chance}% 概率${direction} ${difference} 枪${suffix}${reason}`;
+          rows.push(`<span class="probability-note"><span class="note-affixes ${noteClass}">${lineNames}</span>${!hasNext&&line.length===3?'<span class="note-separator">：</span>':""}${detail}</span>`);
+          if(!hasNext&&line.length===3) rows.push(`<span class="probability-note">${chance}% 概率${direction} ${difference} 枪${suffix}${reason}</span>`);
+        });
+      });
+      return rows;
+    }
+    function formatOptimalNames(names,rareNames=new Set(),resultsByName=new Map(),targetShots=0,unstableEntries=[]){
+      const displayNames=uniqueNames(names);
+      const includesNoAffix=displayNames.includes("无词条");
+      const affixNames=displayNames.filter(name=>name!=="无词条");
+      const {grouped,regular}=groupOptimalNames(affixNames), blocks=[], singleAffixes=includesNoAffix?["无词条"]:[];
       grouped.forEach(group=>{
-        const items=[`<span class="affix-common">${group.common}</span>`,...group.alternatives];
+        const commonRare=group.alternatives.some(alternative=>combinationInSet(group.common,alternative,rareNames));
+        const items=[`<span class="affix-common${commonRare?" probability-affix":""}">${group.common}</span>`,...group.alternatives.map(alternative=>markProbability(alternative,combinationInSet(group.common,alternative,rareNames)))];
         const rows=[];
         for(let i=0;i<items.length;i+=4) rows.push(optimalRow(items.slice(i,i+4),`sequence group${i?" continuation":" group-start"}`));
         blocks.push({priority:AFFIX_DISPLAY_PRIORITY[group.common]||99,html:rows.join("")});
       });
       regular.forEach(name=>{
-        const parts=sortAffixNames(name.split(" + "));
-        if(parts.length===2) blocks.push({priority:AFFIX_DISPLAY_PRIORITY[parts[0]]||99,html:optimalRow(parts,"sequence pair")});
+        const parts=sortAffixNames(name.split(" + ")), rare=rareNames.has(name.replaceAll(" ",""));
+        if(parts.length===2) blocks.push({priority:AFFIX_DISPLAY_PRIORITY[parts[0]]||99,html:optimalRow(parts.map(part=>markProbability(part,rare)),"sequence pair")});
         else singleAffixes.push(name);
       });
       if(singleAffixes.length){
         const sorted=sortAffixNames(singleAffixes), rows=[];
         for(let i=0;i<sorted.length;i+=4){
-          const items=sorted.slice(i,i+4);
+          const items=sorted.slice(i,i+4).map(name=>markProbability(name,rareNames.has(name)));
           rows.push(optimalRow(items,items.length===1&&sorted.length===1?"single-only":"sequence singles"));
         }
         blocks.push({priority:AFFIX_DISPLAY_PRIORITY[sorted[0]]||99,html:rows.join("")});
       }
       blocks.sort((a,b)=>a.priority-b.priority);
-      return `<span class="optimal-affixes">${blocks.map(block=>block.html).join("")}</span>`;
+      const rareEntries=displayNames.filter(name=>rareNames.has(name)).map(name=>({name,result:resultsByName.get(name),shots:resultsByName.get(name).minShots,difference:resultsByName.get(name).minShots-targetShots,recommendation:false}));
+      const summaryNotes=groupProbabilityNotes([...unstableEntries,...rareEntries],targetShots);
+      return `<span class="optimal-affixes">${blocks.map(block=>block.html).join("")}${summaryNotes.length?`<span class="probability-notes">${summaryNotes.join("")}</span>`:""}</span>`;
     }
     function syncDesktopResultHeight(){
       const results=document.querySelector(".results");
@@ -960,17 +1147,22 @@
         document.querySelector("#resultTable").classList.add("compare-table");
         document.querySelector("thead").innerHTML="<tr><th>护甲</th><th>单双伤差距</th><th>单伤最优</th><th>单伤词条</th><th>双伤最优</th><th>双伤词条</th></tr>";
         document.querySelector("tbody").innerHTML=lastResults.map(row=>{
-          const singleMeasured=row.singleValues.map(metricValue), doubleMeasured=row.doubleValues.map(metricValue);
-          const singleMin=Math.min(...singleMeasured), doubleMin=Math.min(...doubleMeasured);
-          const singleIndex=singleMeasured.indexOf(singleMin), doubleIndex=doubleMeasured.indexOf(doubleMin);
-          const singleNames=formatOptimalNames(row.singleColumns.filter((_,i)=>isMinimum(singleMeasured[i],singleMin)).map(c=>c.name));
-          const doubleNames=formatOptimalNames(row.doubleColumns.filter((_,i)=>isMinimum(doubleMeasured[i],doubleMin)).map(c=>c.name));
-          const gap=singleMin-doubleMin;
-          const singleBest=singleMin<=doubleMin?"best":"";
-          const doubleBest=doubleMin<=singleMin?"best":"";
-          const gapDisplay=Math.abs(displayMetricValue(row.singleValues[singleIndex])-displayMetricValue(row.doubleValues[doubleIndex]));
-          const gapText=isMinimum(gap,0)?'<span class="gap-highlight">无差距</span>':gap>0?`双伤减少 <span class="gap-highlight">${formatMetric(gapDisplay)}</span>`:`单伤减少 <span class="gap-highlight">${formatMetric(gapDisplay)}</span>`;
-          return `<tr><td><span class="armor ${armorClass(row.quality)}"><span>${row.quality}甲</span><span class="armor-detail">${row.plates}格${row.variant?` ${row.variant}`:""}</span></span></td><td>${gapText}</td><td class="${singleBest}">${formatResult(row.singleValues[singleIndex])}</td><td>${singleNames}</td><td class="${doubleBest}">${formatResult(row.doubleValues[doubleIndex])}</td><td>${doubleNames}</td></tr>`;
+          const singlePlan=recommendationPlan(row.singleValues,row.singleEligible), doublePlan=recommendationPlan(row.doubleValues,row.doubleEligible);
+          const singleIndexes=uniqueIndexes([...singlePlan.recommended,...singlePlan.rare]);
+          const doubleIndexes=uniqueIndexes([...doublePlan.recommended,...doublePlan.rare]);
+          const singleNamesList=singleIndexes.map(i=>row.singleColumns[i].name), doubleNamesList=doubleIndexes.map(i=>row.doubleColumns[i].name);
+          const singleMap=new Map(singleIndexes.map(i=>[row.singleColumns[i].name,row.singleValues[i]]));
+          const doubleMap=new Map(doubleIndexes.map(i=>[row.doubleColumns[i].name,row.doubleValues[i]]));
+          const singleUnstable=singlePlan.unstable.map(i=>unstableEntry(row.singleColumns[i].name,row.singleValues[i],singlePlan.targetShots,row.singleColumns[i])).filter(Boolean);
+          const doubleUnstable=doublePlan.unstable.map(i=>unstableEntry(row.doubleColumns[i].name,row.doubleValues[i],doublePlan.targetShots,row.doubleColumns[i])).filter(Boolean);
+          const singleNames=formatOptimalNames(singleNamesList,new Set(singlePlan.rare.map(i=>row.singleColumns[i].name)),singleMap,singlePlan.targetShots,singleUnstable);
+          const doubleNames=formatOptimalNames(doubleNamesList,new Set(doublePlan.rare.map(i=>row.doubleColumns[i].name)),doubleMap,doublePlan.targetShots,doubleUnstable);
+          const singleStrict=singlePlan.targetShots, doubleStrict=doublePlan.targetShots;
+          const gapDisplay=metricMode==="shots"?Math.abs(singleStrict-doubleStrict):Math.abs(singleStrict-doubleStrict)*weaponConfig.shotIntervalMs;
+          const singleBest=singleStrict<=doubleStrict?"best":"";
+          const doubleBest=doubleStrict<=singleStrict?"best":"";
+          const gapText=gapDisplay===0?'<span class="gap-highlight">无差距</span>':singleStrict>doubleStrict?`双伤减少 <span class="gap-highlight">${formatMetric(gapDisplay)}</span>`:`单伤减少 <span class="gap-highlight">${formatMetric(gapDisplay)}</span>`;
+          return `<tr><td><span class="armor ${armorClass(row.quality)}"><span>${row.quality}甲</span><span class="armor-detail">${row.plates}格${row.variant?` ${row.variant}`:""}</span></span></td><td>${gapText}</td><td class="${singleBest}">${formatTargetResult(singleStrict)}</td><td>${singleNames}</td><td class="${doubleBest}">${formatTargetResult(doubleStrict)}</td><td>${doubleNames}</td></tr>`;
         }).join("");
         const tableWrapWidth=document.querySelector(".table-wrap").clientWidth;
         const naturalWidth=156+5*(window.innerWidth<=600?100:108);
@@ -979,16 +1171,22 @@
         return;
       }
       document.querySelector("#resultTable").classList.remove("compare-table");
-      const columns=activeColumns();
-      const visibleColumns=viewMode==="all"?columns:[{name:"最少枪数",summary:true},{name:"最优词条",summary:true}];
+      const columns=renderedColumns.length?renderedColumns:activeColumns();
+      const visibleColumns=viewMode==="all"?columns:[{name:"通常最少枪数",summary:true},{name:"最优词条",summary:true}];
       document.querySelector("thead").innerHTML=`<tr><th>护甲</th>${visibleColumns.map(c=>`<th>${formatAffixName(c.name)}</th>`).join("")}</tr>`;
       document.querySelector("tbody").innerHTML=lastResults.map(row=>{
         if(viewMode==="best"){
-          const measured=row.values.map(metricValue), min=Math.min(...measured), names=formatOptimalNames(columns.filter((_,i)=>isMinimum(measured[i],min)).map(c=>c.name));
-          return `<tr><td><span class="armor ${armorClass(row.quality)}"><span>${row.quality}甲</span><span class="armor-detail">${row.plates}格${row.variant?` ${row.variant}`:""}</span></span></td><td class="best">${formatResult(row.values[measured.indexOf(min)])}</td><td>${names}</td></tr>`;
+          const plan=recommendationPlan(row.values,row.eligibleIndexes);
+          const indexes=uniqueIndexes([...plan.recommended,...plan.rare]);
+          const namesList=indexes.map(i=>columns[i].name);
+          const resultMap=new Map(indexes.map(i=>[columns[i].name,row.values[i]]));
+          const unstable=plan.unstable.map(i=>unstableEntry(columns[i].name,row.values[i],plan.targetShots,columns[i])).filter(Boolean);
+          const names=formatOptimalNames(namesList,new Set(plan.rare.map(i=>columns[i].name)),resultMap,plan.targetShots,unstable);
+          return `<tr><td><span class="armor ${armorClass(row.quality)}"><span>${row.quality}甲</span><span class="armor-detail">${row.plates}格${row.variant?` ${row.variant}`:""}</span></span></td><td class="best">${formatTargetResult(plan.targetShots)}</td><td>${names}</td></tr>`;
         }
-        const measured=row.values.map(metricValue), min=Math.min(...measured);
-        return `<tr><td><span class="armor ${armorClass(row.quality)}"><span>${row.quality}甲</span><span class="armor-detail">${row.plates}格${row.variant?` ${row.variant}`:""}</span></span></td>${row.values.map((shots,i)=>`<td class="${isMinimum(measured[i],min)?"best":""}">${formatResult(shots)}</td>`).join("")}</tr>`;
+        const plan=recommendationPlan(row.values,row.eligibleIndexes), recommended=new Set(plan.recommended);
+        const relevant=new Set(row.eligibleIndexes);
+        return `<tr><td><span class="armor ${armorClass(row.quality)}"><span>${row.quality}甲</span><span class="armor-detail">${row.plates}格${row.variant?` ${row.variant}`:""}</span></span></td>${row.values.map((result,i)=>{const note=allViewNote(result,plan,relevant.has(i));return `<td class="${recommended.has(i)?"best":""}">${formatStrictResult(result)}${note}</td>`}).join("")}</tr>`;
       }).join("");
       const tableWrapWidth=document.querySelector(".table-wrap").clientWidth;
       const naturalWidth=156+columns.length*(window.innerWidth<=600?100:108);
@@ -1013,9 +1211,11 @@
           document.querySelector("#randomSummary").textContent=randomText;
           if(cfg.quality==="紫"){
             const purpleColumns=[{name:"无词条",effects:[],armorBreak:false,flesh:false}];
+            renderedColumns=purpleColumns;
+            excludedColumns=[];
             lastResults=armors.map((armorConfig,ri)=>{
-              const slots=sharedProjectileSlots(cfg,armorConfig,mainHit,purpleColumns);
-              return {...armorConfig,values:[expected(cfg,armorConfig,mainHit,random,purpleColumns[0],20260728+ri,slots)]};
+              const slots=sharedShotSlots(cfg,armorConfig,mainHit,purpleColumns,random);
+              return {...armorConfig,eligibleIndexes:[0],values:[expected(cfg,armorConfig,mainHit,random,purpleColumns[0],20260728+ri,slots)]};
             });
             affixMode="single";
             document.querySelector("#singleAffix").classList.add("active");
@@ -1030,29 +1230,38 @@
             if(affixMode==="compare"){
               const noAffix={name:"无词条",effects:[],armorBreak:false,flesh:false};
               const singleCompareColumns=[noAffix,...columnsForQuality(singleColumns,cfg.quality)];
-              const doubleCompareColumns=[noAffix,...columnsForQuality(doubleColumns,cfg.quality)];
+              const doubleCompareColumns=columnsForQuality(doubleColumns,cfg.quality);
+              renderedColumns=[];
+              excludedColumns=[];
               const allCompareColumns=[...singleCompareColumns,...doubleCompareColumns];
               lastResults=armors.map((armorConfig,ri)=>{
-                const slots=sharedProjectileSlots(cfg,armorConfig,mainHit,allCompareColumns);
+                const slots=sharedShotSlots(cfg,armorConfig,mainHit,allCompareColumns,random);
                 return {
                   ...armorConfig,
                   singleColumns:singleCompareColumns,
                   doubleColumns:doubleCompareColumns,
+                  singleEligible:singleCompareColumns.map((_,index)=>index).filter(index=>columnCanAffectHits(singleCompareColumns[index],mainHit,random)),
+                  doubleEligible:doubleCompareColumns.map((_,index)=>index).filter(index=>columnCanAffectHits(doubleCompareColumns[index],mainHit,random)),
                   singleValues:singleCompareColumns.map(c=>expected(cfg,armorConfig,mainHit,random,c,20260728+ri,slots)),
                   doubleValues:doubleCompareColumns.map(c=>expected(cfg,armorConfig,mainHit,random,c,20260728+ri,slots))
                 };
               });
             } else {
               const columns=activeColumns();
+              const eligibleIndexes=columns.map((column,index)=>columnCanAffectHits(column,mainHit,random)?index:-1).filter(index=>index>=0);
+              renderedColumns=columns;
+              excludedColumns=[];
               lastResults=armors.map((armorConfig,ri)=>{
-                const slots=sharedProjectileSlots(cfg,armorConfig,mainHit,columns);
-                return {...armorConfig,values:columns.map(c=>expected(cfg,armorConfig,mainHit,random,c,20260728+ri,slots))};
+                const slots=sharedShotSlots(cfg,armorConfig,mainHit,columns,random);
+                return {...armorConfig,eligibleIndexes,values:columns.map(c=>expected(cfg,armorConfig,mainHit,random,c,20260728+ri,slots))};
               });
             }
           }
-          document.querySelector("#status").textContent=`${cfg.quality==="紫"?"无词条":affixMode==="single"?"单伤":affixMode==="double"?"双伤":"单双伤对比"} · ${SAMPLES.toLocaleString()} 次随机模拟 · 期望向上取整`;
-          viewMode="best";
-          document.querySelector("#bestView").classList.add("active"); document.querySelector("#allView").classList.remove("active");
+          document.querySelector("#status").textContent=`${cfg.quality==="紫"?"无词条":affixMode==="single"?"单伤":affixMode==="double"?"双伤":"单双伤对比"} · ${SAMPLES.toLocaleString()} 次随机模拟 · 确定目标枪数，并比较命中概率`;
+          viewMode=viewAfterRender||"best";
+          viewAfterRender=null;
+          document.querySelector("#bestView").classList.toggle("active",viewMode==="best");
+          document.querySelector("#allView").classList.toggle("active",viewMode==="all");
           drawTable();
       syncDesktopResultHeight();
         } catch(e){ error.textContent=e.message; error.style.display="block"; }
@@ -1068,7 +1277,7 @@
       Object.values(buttonIds).forEach(id=>document.querySelector(`#${id}`).classList.toggle("active",id===buttonIds[mode]));
       const comparing=mode==="compare";
       document.querySelector("#bestView").disabled=comparing;
-      document.querySelector("#allView").disabled=comparing;
+      document.querySelector("#allView").disabled=false;
       render();
     }
     document.querySelector("#singleAffix").addEventListener("click",()=>setAffixMode("single"));
@@ -1077,7 +1286,26 @@
     document.querySelector("#shotsMetric").addEventListener("click",()=>{metricMode="shots";document.querySelector("#shotsMetric").classList.add("active");document.querySelector("#ttkMetric").classList.remove("active");document.querySelector("#metricSummary").textContent="击杀枪数";drawTable();});
     document.querySelector("#ttkMetric").addEventListener("click",()=>{metricMode="ttk";document.querySelector("#ttkMetric").classList.add("active");document.querySelector("#shotsMetric").classList.remove("active");document.querySelector("#metricSummary").textContent="TTK（首枪 0ms）";drawTable();});
     document.querySelector("#bestView").addEventListener("click",()=>{viewMode="best";document.querySelector("#bestView").classList.add("active");document.querySelector("#allView").classList.remove("active");drawTable();});
-    document.querySelector("#allView").addEventListener("click",()=>{viewMode="all";document.querySelector("#allView").classList.add("active");document.querySelector("#bestView").classList.remove("active");drawTable();});
+    document.querySelector("#allView").addEventListener("click",()=>{
+      if(affixMode==="compare"){
+        viewAfterRender="all";
+        setAffixMode("single");
+        return;
+      }
+      viewMode="all";
+      document.querySelector("#allView").classList.add("active");
+      document.querySelector("#bestView").classList.remove("active");
+      drawTable();
+    });
+    document.querySelector("#resultTable").addEventListener("click",event=>{
+      const trigger=event.target.closest(".reason-trigger");
+      document.querySelectorAll(".reason-marker.open").forEach(marker=>{
+        if(!trigger||marker!==trigger.closest(".reason-marker")) marker.classList.remove("open");
+      });
+      if(trigger) trigger.closest(".reason-marker").classList.toggle("open");
+    });
+    document.querySelector(".table-wrap").addEventListener("scroll",()=>document.querySelectorAll(".reason-marker.open").forEach(marker=>marker.classList.remove("open")),{passive:true});
+
     const guideDialog=document.querySelector("#guideDialog");
     document.querySelector("#guideButton").addEventListener("click",()=>guideDialog.showModal());
     document.querySelector("#guideClose").addEventListener("click",()=>guideDialog.close());
