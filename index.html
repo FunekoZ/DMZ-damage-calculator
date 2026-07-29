@@ -38,12 +38,12 @@
     h1 { margin: 0; font-size: clamp(30px, 4vw, 50px); letter-spacing: -.045em; }
     .intro { max-width: 800px; margin: 14px 0 28px; color: var(--muted); line-height: 1.7; }
 
-    .page-header { position: relative; padding-right: 250px; }
+    .page-header { position: relative; padding-right: 460px; }
     .author-card { position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
     .author-card a { color: var(--text); text-decoration: none; }
     .author-card a:hover { color: var(--accent); }
-    .mechanics-button { min-height: 34px; padding: 0 12px; border: 1px solid var(--line-bright); border-radius: 7px; background: #0d1216; color: var(--text); cursor: pointer; font-weight: 700; }
-    .mechanics-button:hover { border-color: var(--accent); color: var(--accent); }
+    .mechanics-button, .guide-button { min-height: 34px; padding: 0 12px; border: 1px solid var(--line-bright); border-radius: 7px; background: #0d1216; color: var(--text); cursor: pointer; font-weight: 700; }
+    .mechanics-button:hover, .guide-button:hover { border-color: var(--accent); color: var(--accent); }
     .star-link { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1px solid var(--accent); border-radius: 7px; color: var(--accent) !important; background: var(--accent-soft); font-weight: 800; }
     .star-link:hover { background: rgba(229,174,69,.23); }
 
@@ -79,8 +79,8 @@
     }
     input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
     .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    #randomInputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
-    .random-grid { display: grid; grid-template-columns: minmax(0, 1fr) 64px; gap: 8px; align-items: center; margin: 0; }
+    #randomInputs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .random-grid { display: grid; grid-template-columns: minmax(0, 1fr) 44px; gap: 5px; align-items: center; margin: 0; }
     .random-grid span { color: #cbd2d7; font-size: 12px; }
     .random-grid select { height: 34px; }
     .hint { margin: 10px 0 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
@@ -98,35 +98,67 @@
     .view-toggle button { height: 30px; padding: 0 12px; border: 0; border-radius: 5px; background: transparent; color: var(--muted); cursor: pointer; font-size: 12px; }
     .view-toggle button.active { background: var(--accent); color: #171207; font-weight: 800; }
     .view-toggle button:disabled { opacity: .35; cursor: not-allowed; }
+    .calculate-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; }
     .calculate {
       width: 100%; height: 44px; border: 0; border-radius: 7px; cursor: pointer;
       background: var(--accent); color: #171207; font-weight: 850;
     }
     .calculate:hover { filter: brightness(1.08); }
+    .auto-calculate { display: inline-flex; align-items: center; gap: 6px; margin: 0; color: var(--muted); white-space: nowrap; cursor: pointer; font-size: 11px; }
+    .auto-calculate input { width: 15px; height: 15px; margin: 0; accent-color: var(--accent); }
 
     .summary { display: grid; grid-template-columns: repeat(4, minmax(130px, 1fr)); gap: 10px; margin-bottom: 14px; }
     .stat { min-height: 82px; padding: 15px; border: 1px solid var(--line); border-radius: 10px; background: rgba(17,23,28,.88); }
     .stat span { display: block; color: var(--muted); font-size: 11px; }
     .stat strong { display: block; margin-top: 8px; font-size: 17px; }
 
-    .results { overflow: hidden; min-width: 0; max-width: 100%; }
-    .result-head { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+    .results { display: flex; overflow: hidden; min-width: 0; max-width: 100%; flex-direction: column; }
+    .result-head { flex: 0 0 auto; display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 18px 20px; border-bottom: 1px solid var(--line); }
     .result-head h2 { margin: 0; font-size: 15px; }
     .result-head span { color: var(--muted); font-size: 12px; }
-    .table-wrap { overflow: auto; width: 100%; max-width: 100%; max-height: calc(100vh - 190px); }
-    table { border-collapse: separate; border-spacing: 0; min-width: 3900px; width: 100%; }
-    th, td { min-width: 132px; height: 56px; padding: 9px 10px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: center; }
+    .table-wrap { flex: 1 1 auto; overflow: auto; width: 100%; max-width: 100%; min-height: 0; }
+    table { border-collapse: separate; border-spacing: 0; min-width: 100%; width: max-content; }
+    th, td { min-width: 108px; height: 56px; padding: 9px 8px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); text-align: center; }
     th { position: sticky; top: 0; z-index: 2; background: #1a2229; color: #dbe2e6; font-size: 11px; line-height: 1.4; }
-    th:first-child, td:first-child { position: sticky; left: 0; z-index: 3; min-width: 124px; text-align: left; }
-    th:first-child { z-index: 4; color: var(--accent); }
+    th:first-child, td:first-child { position: sticky; left: 0; z-index: 3; min-width: 156px; width: 156px; max-width: 156px; }
+    th:first-child { z-index: 5; color: var(--accent); text-align: center; }
+    td:first-child { text-align: left; }
+    #resultTable.compare-table th:nth-child(2), #resultTable.compare-table td:nth-child(2) { position: sticky; left: 156px; z-index: 3; }
+    #resultTable.compare-table th:nth-child(2) { z-index: 5; color: var(--accent); background: #1a2229; }
+    #resultTable.compare-table td:nth-child(2) { background: #11171c; }
+    #resultTable.compare-table tbody tr:nth-child(even) td:nth-child(2) { background: #151d23; }
+    #resultTable.compare-table tbody tr:hover td:nth-child(2) { background: #25251e; }
     td { background: #11171c; color: #dce3e7; font-size: 13px; font-weight: 700; }
     tbody tr:nth-child(even) td { background: #151d23; }
     tbody tr:hover td { background: #25251e; }
     td:first-child { padding-left: 16px; }
-    .armor { display: inline-flex; align-items: center; gap: 8px; }
-    .armor::before { width: 6px; height: 24px; border-radius: 2px; background: currentColor; content: ""; }
+    .armor { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .armor::before { flex: 0 0 auto; width: 6px; height: 24px; border-radius: 2px; background: currentColor; content: ""; }
+    .armor-detail::before { content: " · "; }
     .purple { color: var(--purple); } .orange { color: var(--orange); } .red { color: var(--red); } .gold { color: var(--gold); }
     .best { color: #fff2c7; background: rgba(229,174,69,.13) !important; }
+    .gap-highlight { color: #fff2c7; }
+    .optimal-affixes { display: inline-grid; width: min(100% - 24px, 720px); row-gap: 5px; padding: 2px 8px; line-height: 1.45; }
+    .optimal-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: center; }
+    .optimal-affix { padding: 0 7px; white-space: nowrap; text-align: center; }
+    .optimal-row.count-1 .optimal-affix:first-child { grid-column: 1; }
+    .optimal-row.single-only .optimal-affix:first-child { grid-column: 2 / span 2; }
+    .optimal-row.count-2 .optimal-affix:first-child { grid-column: 2; }
+    .optimal-row.count-2 .optimal-affix:last-child { grid-column: 3; }
+    .optimal-row.count-3:not(.sequence) .optimal-affix:nth-child(2) { grid-column: 2 / span 2; }
+    .optimal-row.count-3:not(.sequence) .optimal-affix:last-child { grid-column: 4; }
+    .optimal-row.sequence.singles.count-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .optimal-row.sequence.singles.count-3 .optimal-affix { grid-column: auto; }
+    .optimal-row.sequence .optimal-affix { position: relative; }
+    .optimal-row.sequence .optimal-affix:nth-child(n+2)::before { position: absolute; right: calc(100% - 3px); color: var(--muted); font-weight: 500; content: "/"; }
+    .optimal-row.sequence .optimal-affix.plus:nth-child(2)::before { content: "+"; }
+    .optimal-row.sequence.continuation .optimal-affix:first-child { grid-column: 2; }
+    .optimal-row.sequence.continuation .optimal-affix:first-child::before { position: absolute; right: calc(100% - 3px); color: var(--muted); font-weight: 500; content: "/"; }
+    .optimal-row.sequence.pair .optimal-affix:first-child { grid-column: 1; }
+    .optimal-row.sequence.pair .optimal-affix:last-child { grid-column: 2; }
+    .optimal-row.sequence.pair .optimal-affix:last-child::before { content: "+"; }
+    .optimal-row.group-start:not(:first-child), .optimal-row.pair:not(:first-child) { margin-top: 9px; }
+    .affix-common, .optimal-row.sequence.pair .optimal-affix:first-child { color: #e99a9a; font-weight: 700; }
     .loading { opacity: .65; pointer-events: none; }
     .error { display: none; margin-top: 10px; color: #ff8c8c; font-size: 12px; }
 
@@ -136,9 +168,9 @@
       .author-card { position: static; margin: 0 0 22px; justify-content: flex-start; }
       .layout { grid-template-columns: 1fr; }
       .controls { position: static; }
-      #randomInputs { grid-template-columns: 1fr; }
+      #randomInputs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .summary { grid-template-columns: 1fr 1fr; }
-      .table-wrap { max-height: 70vh; }
+      .table-wrap { overflow: auto; min-height: 0; }
     }
 
     @media (max-width: 600px) {
@@ -149,7 +181,7 @@
       h1 { font-size: 30px; line-height: 1.08; }
       .intro { margin: 10px 0 16px; font-size: 13px; line-height: 1.6; }
       .author-card { justify-content: space-between; margin-bottom: 0; flex-wrap: wrap; }
-      .mechanics-button { min-height: 38px; }
+      .mechanics-button, .guide-button { min-height: 38px; }
       .star-link { min-height: 38px; padding: 0 11px; }
       .mechanics-dialog { width: calc(100% - 20px); max-height: 90vh; }
       .dialog-head { padding: 15px 16px; }
@@ -165,9 +197,11 @@
       input, select { height: 44px; font-size: 16px; }
       .weapon-select-row { grid-template-columns: 1fr; }
       .recommend { width: 100%; height: 42px; }
-      #randomInputs { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .random-grid { grid-template-columns: minmax(0, 1fr) 58px; gap: 6px; }
+      #randomInputs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+      .random-grid { grid-template-columns: minmax(0, 1fr) 40px; gap: 4px; }
       .random-grid select { height: 40px; padding: 0 8px; }
+      .calculate-row { grid-template-columns: 1fr; gap: 9px; }
+      .auto-calculate { justify-content: center; }
       .calculate { height: 48px; }
 
       .summary { grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
@@ -179,23 +213,28 @@
       .result-head > div:first-child { margin-bottom: 2px; }
       .view-toggle { display: grid; width: 100%; grid-auto-flow: column; grid-auto-columns: 1fr; }
       .view-toggle button { width: 100%; height: 36px; padding: 0 6px; }
-      .results { width: 100%; max-width: 100%; contain: inline-size; }
-      .table-wrap { display: block; width: 100%; max-width: 100%; overflow-x: auto; overflow-y: auto; max-height: 62vh; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
-      #resultTable { width: max-content; max-width: none; font-size: 12px; }
-      th, td { min-width: 112px; height: 52px; padding: 8px; }
-      th:first-child, td:first-child { min-width: 104px; }
-      td:first-child { padding-left: 10px; }
-      .armor { gap: 6px; white-space: nowrap; }
+      .results { display: block; width: 100%; max-width: 100%; }
+      .table-wrap { display: block; width: 100%; max-width: 100%; max-height: 62vh; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-x pan-y; }
+      #resultTable.compare-table th:nth-child(2), #resultTable.compare-table td:nth-child(2) { left: 156px; }
+      #resultTable { width: max-content; min-width: 100%; max-width: none; font-size: 12px; }
+      th, td { min-width: 100px; height: 52px; padding: 8px 6px; }
+      th:first-child, td:first-child { min-width: 156px; width: 156px; max-width: 156px; }
+      td:first-child { padding: 8px 10px; }
+      .armor { display: inline-flex; flex-direction: row; align-items: center; gap: 6px; white-space: nowrap; line-height: 1.25; }
       .armor::before { width: 4px; height: 21px; }
+      .armor-detail { display: inline; }
+      .armor-detail::before { content: " · "; }
+      .optimal-affixes { width: calc(100% - 12px); }
+      .optimal-affix { padding-inline: 5px; }
     }
 
     @media (max-width: 380px) {
       .page { padding-inline: 8px; }
       h1 { font-size: 27px; }
       .summary { grid-template-columns: 1fr; }
-      #randomInputs { grid-template-columns: 1fr; }
+      #randomInputs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .author-card { align-items: stretch; flex-direction: column; gap: 8px; }
-      .mechanics-button, .star-link { width: 100%; justify-content: center; }
+      .mechanics-button, .guide-button, .star-link { width: 100%; justify-content: center; }
       .section { padding-inline: 13px; }
     }
   </style>
@@ -208,6 +247,7 @@
       <p class="intro">评估不同交战场景下的最佳枪械词条，并检查你已有的词条组合能达到怎样的击杀枪数与 TTK。</p>
       <div class="author-card">
         <button id="mechanicsButton" class="mechanics-button" type="button">机制与词条讲解</button>
+        <button id="guideButton" class="guide-button" type="button">使用说明</button>
         <span>by <a href="https://github.com/FunekoZ" target="_blank" rel="noopener noreferrer">FunekoZ</a></span>
         <a class="star-link" href="https://github.com/FunekoZ/DMZ-damage-calculator" target="_blank" rel="noopener noreferrer" title="打开 GitHub 仓库后点击 Star">★ GitHub / Star</a>
       </div>
@@ -269,7 +309,10 @@
           <p class="hint">每个部位选择 0 / 1 / 2 枪。随机子弹会插入单次击杀序列，顺序参与破甲计算。</p>
         </section>
         <section class="section">
-          <button class="calculate" id="calculate">重新计算</button>
+          <div class="calculate-row">
+            <button class="calculate" id="calculate">重新计算</button>
+            <label class="auto-calculate"><input id="autoCalculate" type="checkbox" checked>自动重算</label>
+          </div>
           <div class="error" id="error"></div>
         </section>
       </aside>
@@ -302,6 +345,19 @@
         </div>
       </section>
     </div>
+
+    <dialog id="guideDialog" class="mechanics-dialog">
+      <div class="dialog-head">
+        <h2>使用说明</h2>
+        <button id="guideClose" class="dialog-close" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="dialog-body">
+        <h3>快速开始</h3>
+        <p>依次选择枪械、枪械品质和射程区间，然后按实际交战情况选择主要命中部位与随机命中设定。</p>
+        <p>如果不确定如何设置命中场景，可以点击“推荐命中预设”，计算器会根据当前枪械自动选择适合的命中配置。</p>
+        <p>完成设置后点击“重新计算”，即可查看不同护甲与词条组合对应的击杀枪数或 TTK。</p>
+      </div>
+    </dialog>
 
     <dialog id="mechanicsDialog" class="mechanics-dialog">
       <div class="dialog-head">
@@ -342,6 +398,14 @@
         <h3>没有护甲覆盖的部位</h3>
         <p>半包甲不保护腿部；躯干甲只保护上胸和腹部。命中未覆盖区域时，整颗子弹直接造成当前血量伤害，破甲与肉伤不会触发。</p>
 
+        <h3>究甲特殊规则</h3>
+        <ul>
+          <li>3 格 β：生命值为 200。</li>
+          <li>4 格 γ / δ：生命值与护甲规则不变。</li>
+          <li>4 格黑曜石：免疫第一次开火造成的全部伤害；多弹丸枪械的首次开火所有弹丸均被免疫。</li>
+          <li>6 格 α：生命值与护甲规则不变。</li>
+        </ul>
+
         <h3>多弹丸与 TTK</h3>
         <p>每颗子弹按顺序独立结算；同一次开火中前一颗可以先破甲，后一颗继续打血。枪数按开火次数统计，TTK 按以下公式计算：</p>
         <div class="formula">TTK = (击杀开火次数 − 1) × 射击间隔</div>
@@ -354,12 +418,15 @@
     const levels = { 紫: 0, 橙: 1, 红: 2, 究: 3 };
     const qualityMultipliers = { "-3": .5, "-2": .7, "-1": .85, "0": 1, "1": 1.1, "2": 1.2, "3": 1.3 };
     const armors = [
-      ["紫",1,"全包"], ["紫",2,"半包"], ["紫",3,"躯干"],
-      ["橙",2,"全包"], ["橙",3,"半包"],
-      ["红",3,"全包"], ["红",4,"半包"],
-      ["究",4,"全包"], ["究",6,"全包"]
+      {quality:"紫",plates:1,armorType:"全包"}, {quality:"紫",plates:2,armorType:"半包"}, {quality:"紫",plates:3,armorType:"躯干"},
+      {quality:"橙",plates:2,armorType:"全包"}, {quality:"橙",plates:3,armorType:"半包"},
+      {quality:"红",plates:3,armorType:"全包"}, {quality:"红",plates:4,armorType:"半包"},
+      {quality:"究",plates:3,armorType:"全包",variant:"β",health:200},
+      {quality:"究",plates:4,armorType:"全包",variant:"γ / δ"},
+      {quality:"究",plates:4,armorType:"全包",variant:"黑曜石",immuneFirstShot:true},
+      {quality:"究",plates:6,armorType:"全包",variant:"α"}
     ];
-    const regionLabels = { lower_arm:"下臂", upper_arm:"上臂", upper_chest:"上胸", abdomen:"腹部", legs:"腿部", head:"头部" };
+    const regionLabels = { upper_chest:"上胸", abdomen:"腹部", head:"头部", upper_arm:"上臂", lower_arm:"下臂", legs:"腿部" };
     const sceneLabels = { lower_arm:"下臂", upper_arm:"上臂", upper_chest:"上胸", legs:"腿部", head:"头部" };
     const randomPresets = {
       normal:{lower_arm:0,upper_arm:0,upper_chest:1,abdomen:0,legs:0,head:0},
@@ -426,13 +493,16 @@
       if(armorType==="躯干") return ["upper_chest","abdomen"].includes(region);
       throw new Error(`未知护甲类型：${armorType}`);
     }
-    function simulate(config,armorQuality,plates,armorType,sequence,mainHit,column){
-      let health=HEALTH, armor=plates*ARMOR_PER_PLATE, shots=0, projectileIndex=0;
+    function simulate(config,armorConfig,sequence,mainHit,column){
+      const {quality:armorQuality,plates,armorType,health:startingHealth=HEALTH,immuneFirstShot=false}=armorConfig;
+      let health=startingHealth, armor=plates*ARMOR_PER_PLATE, shots=0, projectileIndex=0;
       const orange=config.quality==="橙";
       while(health>0 && shots<1000){
         shots++;
+        const immuneShot=immuneFirstShot&&shots===1;
         for(let projectile=0;projectile<config.projectilesPerShot && health>0;projectile++){
           const region=projectileIndex<sequence.length?sequence[projectileIndex]:mainHit; projectileIndex++;
+          if(immuneShot) continue;
           const damage=shotDamage(config,region,column.effects);
           const armorBreakActive=column.armorBreak&&(!orange||["upper_chest","abdomen"].includes(region));
           const am=armorMultiplier(config.quality,armorQuality,armorBreakActive);
@@ -451,20 +521,23 @@
       }
       return shots;
     }
-    function expected(config,armorQuality,plates,armorType,mainHit,randomHits,column,seed){
-      const estimate=simulate(config,armorQuality,plates,armorType,[],mainHit,column);
-      const projectileSlots=estimate*config.projectilesPerShot;
+    function expected(config,armorConfig,mainHit,randomHits,column,seed,projectileSlots){
+      const estimate=simulate(config,armorConfig,[],mainHit,column);
+      const slots=projectileSlots??estimate*config.projectilesPerShot;
       const pool=[]; Object.entries(randomHits).forEach(([r,count])=>{for(let i=0;i<count;i++)pool.push(r)});
       if(!pool.length) return estimate;
-      if(pool.length>projectileSlots) throw new Error(`随机命中共 ${pool.length} 颗子弹，超过部分场景估算的 ${projectileSlots} 颗子弹`);
+      if(pool.length>slots) throw new Error(`随机命中共 ${pool.length} 颗子弹，超过部分场景估算的 ${slots} 颗子弹`);
       const rng=seeded(seed); let total=0;
       for(let s=0;s<SAMPLES;s++){
-        const positions=shuffle([...Array(projectileSlots).keys()],rng).slice(0,pool.length).sort((a,b)=>a-b);
-        const hits=shuffle([...pool],rng); const sequence=Array(projectileSlots).fill(mainHit);
+        const positions=shuffle([...Array(slots).keys()],rng).slice(0,pool.length).sort((a,b)=>a-b);
+        const hits=shuffle([...pool],rng); const sequence=Array(slots).fill(mainHit);
         positions.forEach((p,i)=>sequence[p]=hits[i]);
-        total+=simulate(config,armorQuality,plates,armorType,sequence,mainHit,column);
+        total+=simulate(config,armorConfig,sequence,mainHit,column);
       }
-      return Math.ceil(total/SAMPLES);
+      return total/SAMPLES;
+    }
+    function sharedProjectileSlots(config,armorConfig,mainHit,columns){
+      return Math.max(...columns.map(column=>simulate(config,armorConfig,[],mainHit,column)))*config.projectilesPerShot;
     }
     const BUILT_IN_WEAPONS = [
   {
@@ -746,21 +819,25 @@
         // 保留已经内置并渲染的完整枪械数据。
       }
     }
-    document.querySelector("#recommendPreset").addEventListener("click",()=>{
+    function applyRecommendedPreset(){
       const weaponName=weaponConfig.name;
       const useFrontFight=weaponName.startsWith("Fennec")||weaponName.startsWith("Type19");
       document.querySelector("#mainHit").value=useFrontFight?"lower_arm":"upper_chest";
       const preset=weaponName==="Type19 (单点)"?"tapfire":useFrontFight?"normal":"tapfire";
       document.querySelector("#randomPreset").value=preset;
       applyRandomPreset(preset);
-      render();
+    }
+    document.querySelector("#recommendPreset").addEventListener("click",()=>{
+      applyRecommendedPreset();
+      autoRender();
     });
 
     document.querySelector("#weaponSelect").addEventListener("change",event=>{
       const index=+event.target.value;
       event.target.dataset.selectedIndex=String(index);
       setWeapon(weapons[index]);
-      render();
+      applyRecommendedPreset();
+      autoRender();
     });
 
     function updateAffixAvailability(){
@@ -774,11 +851,15 @@
       Object.values(buttonIds).forEach(id=>document.querySelector(`#${id}`).classList.toggle("active",id===buttonIds[affixMode]));
     }
 
-    document.querySelector("#damageRange").addEventListener("change",render);
+    function autoRender(){
+      if(document.querySelector("#autoCalculate").checked) render();
+    }
+
+    document.querySelector("#damageRange").addEventListener("change",autoRender);
     document.querySelector("#gunQuality").addEventListener("change",()=>{
       updateAffixAvailability();
       document.querySelector("#weaponSummary").textContent=`${weaponConfig.name} · ${document.querySelector("#gunQuality").value}`;
-      render();
+      autoRender();
     });
 
     function applyRandomPreset(presetName){
@@ -789,11 +870,12 @@
         select.value=String(preset[select.dataset.random]);
       });
     }
+    document.querySelector("#mainHit").addEventListener("change",autoRender);
     document.querySelector("#randomPreset").addEventListener("change",event=>{
       applyRandomPreset(event.target.value);
-      render();
+      autoRender();
     });
-    document.querySelectorAll("[data-random]").forEach(select=>select.addEventListener("change",render));
+    document.querySelectorAll("[data-random]").forEach(select=>select.addEventListener("change",autoRender));
 
     function randomHits(){ return Object.fromEntries([...document.querySelectorAll("[data-random]")].map(el=>[el.dataset.random,+el.value])); }
     function armorClass(q){return {紫:"purple",橙:"orange",红:"red",究:"gold"}[q]}
@@ -801,41 +883,117 @@
     function metricValue(shots){
       return metricMode==="shots"?shots:(shots-1)*weaponConfig.shotIntervalMs;
     }
+    function displayMetricValue(shots){
+      return metricMode==="shots"?Math.ceil(shots):(Math.ceil(shots)-1)*weaponConfig.shotIntervalMs;
+    }
     function formatMetric(value){
       return metricMode==="shots"?`${value}枪`:`${Number.isInteger(value)?value:value.toFixed(1)}ms`;
     }
+    function formatResult(shots){ return formatMetric(displayMetricValue(shots)); }
+    function isMinimum(value,min){ return Math.abs(value-min)<1e-9; }
+    const AFFIX_DISPLAY_PRIORITY = { "上半0.2":1, "上半0.1":1, "躯干0.2":2, "躯干0.1":2, "手臂0.2":3, "手臂0.1":3, "头部0.5":4, "头部0.3":5, "头部0.1":5, "腿部0.2":6, "腿部0.1":6, "破甲":7, "肉伤":8 };
+    function sortAffixNames(names){ return [...names].sort((a,b)=>(AFFIX_DISPLAY_PRIORITY[a]||99)-(AFFIX_DISPLAY_PRIORITY[b]||99)); }
+    function formatAffixName(name){ return name.split("+").join(" + "); }
+    function groupOptimalNames(names){
+      const remaining=names.map(name=>name.split("+"));
+      const grouped=[];
+      while(true){
+        const counts=new Map();
+        remaining.forEach(parts=>{
+          if(parts.length<2) return;
+          parts.forEach(part=>counts.set(part,(counts.get(part)||0)+1));
+        });
+        const common=[...counts].filter(([,count])=>count>=2).sort((a,b)=>b[1]-a[1]||(AFFIX_DISPLAY_PRIORITY[a[0]]||99)-(AFFIX_DISPLAY_PRIORITY[b[0]]||99))[0]?.[0];
+        if(!common) break;
+        const matches=remaining.filter(parts=>parts.includes(common));
+        grouped.push({common,alternatives:sortAffixNames(matches.map(parts=>parts.filter(part=>part!==common).join(" + ")))});
+        for(let i=remaining.length-1;i>=0;i--) if(remaining[i].includes(common)) remaining.splice(i,1);
+      }
+      return {grouped:grouped.sort((a,b)=>(AFFIX_DISPLAY_PRIORITY[a.common]||99)-(AFFIX_DISPLAY_PRIORITY[b.common]||99)),regular:remaining.map(parts=>parts.join(" + "))};
+    }
+    function optimalRow(items,classes=""){
+      return `<span class="optimal-row count-${items.length}${classes?` ${classes}`:""}">${items.map((item,index)=>`<span class="optimal-affix${classes.includes("group-start")&&index===1?" plus":""}">${item}</span>`).join("")}</span>`;
+    }
+    function formatOptimalNames(names){
+      if(names.includes("无词条")) return `<span class="optimal-affixes">${optimalRow(["无需词条，无负面即可"],"single-only")}</span>`;
+      const {grouped,regular}=groupOptimalNames(names), blocks=[], singleAffixes=[];
+      grouped.forEach(group=>{
+        const items=[`<span class="affix-common">${group.common}</span>`,...group.alternatives];
+        const rows=[];
+        for(let i=0;i<items.length;i+=4) rows.push(optimalRow(items.slice(i,i+4),`sequence group${i?" continuation":" group-start"}`));
+        blocks.push({priority:AFFIX_DISPLAY_PRIORITY[group.common]||99,html:rows.join("")});
+      });
+      regular.forEach(name=>{
+        const parts=sortAffixNames(name.split(" + "));
+        if(parts.length===2) blocks.push({priority:AFFIX_DISPLAY_PRIORITY[parts[0]]||99,html:optimalRow(parts,"sequence pair")});
+        else singleAffixes.push(name);
+      });
+      if(singleAffixes.length){
+        const sorted=sortAffixNames(singleAffixes), rows=[];
+        for(let i=0;i<sorted.length;i+=4){
+          const items=sorted.slice(i,i+4);
+          rows.push(optimalRow(items,items.length===1&&sorted.length===1?"single-only":"sequence singles"));
+        }
+        blocks.push({priority:AFFIX_DISPLAY_PRIORITY[sorted[0]]||99,html:rows.join("")});
+      }
+      blocks.sort((a,b)=>a.priority-b.priority);
+      return `<span class="optimal-affixes">${blocks.map(block=>block.html).join("")}</span>`;
+    }
+    function syncDesktopResultHeight(){
+      const results=document.querySelector(".results");
+      if(window.innerWidth<=1050){ results.style.height=""; return; }
+      const controlsHeight=document.querySelector("#controls").offsetHeight;
+      const summaryHeight=document.querySelector(".summary").offsetHeight;
+      results.style.height=`${Math.max(320,controlsHeight-summaryHeight-14)}px`;
+    }
+    new ResizeObserver(syncDesktopResultHeight).observe(document.querySelector("#controls"));
+    new ResizeObserver(syncDesktopResultHeight).observe(document.querySelector(".summary"));
+    window.addEventListener("resize",syncDesktopResultHeight);
+
+    function syncDesktopRowHeights(){
+      document.querySelectorAll("#resultTable th, #resultTable td").forEach(cell=>cell.style.height="");
+    }
+    window.addEventListener("resize",syncDesktopRowHeights);
+
     function drawTable(){
       if(affixMode==="compare"){
-        document.querySelector("thead").innerHTML="<tr><th>护甲</th><th>单伤最优</th><th>单伤词条</th><th>双伤最优</th><th>双伤词条</th><th>单双伤差距</th></tr>";
+        document.querySelector("#resultTable").classList.add("compare-table");
+        document.querySelector("thead").innerHTML="<tr><th>护甲</th><th>单双伤差距</th><th>单伤最优</th><th>单伤词条</th><th>双伤最优</th><th>双伤词条</th></tr>";
         document.querySelector("tbody").innerHTML=lastResults.map(row=>{
           const singleMeasured=row.singleValues.map(metricValue), doubleMeasured=row.doubleValues.map(metricValue);
           const singleMin=Math.min(...singleMeasured), doubleMin=Math.min(...doubleMeasured);
-          const orangeSingleColumns=columnsForQuality(singleColumns,"橙"), orangeDoubleColumns=columnsForQuality(doubleColumns,"橙");
-          const displaySingleColumns=document.querySelector("#gunQuality").value==="橙"?orangeSingleColumns:singleColumns;
-          const displayDoubleColumns=document.querySelector("#gunQuality").value==="橙"?orangeDoubleColumns:doubleColumns;
-          const singleNames=displaySingleColumns.filter((_,i)=>singleMeasured[i]===singleMin).map(c=>c.name).join(" / ");
-          const doubleNames=displayDoubleColumns.filter((_,i)=>doubleMeasured[i]===doubleMin).map(c=>c.name).join(" / ");
+          const singleIndex=singleMeasured.indexOf(singleMin), doubleIndex=doubleMeasured.indexOf(doubleMin);
+          const singleNames=formatOptimalNames(row.singleColumns.filter((_,i)=>isMinimum(singleMeasured[i],singleMin)).map(c=>c.name));
+          const doubleNames=formatOptimalNames(row.doubleColumns.filter((_,i)=>isMinimum(doubleMeasured[i],doubleMin)).map(c=>c.name));
           const gap=singleMin-doubleMin;
           const singleBest=singleMin<=doubleMin?"best":"";
           const doubleBest=doubleMin<=singleMin?"best":"";
-          const gapText=gap===0?"无差距":gap>0?`双伤减少 ${formatMetric(gap)}`:`单伤减少 ${formatMetric(-gap)}`;
-          return `<tr><td><span class="armor ${armorClass(row.quality)}">${row.quality}甲 · ${row.plates}格</span></td><td class="${singleBest}">${formatMetric(singleMin)}</td><td>${singleNames}</td><td class="${doubleBest}">${formatMetric(doubleMin)}</td><td>${doubleNames}</td><td>${gapText}</td></tr>`;
+          const gapDisplay=Math.abs(displayMetricValue(row.singleValues[singleIndex])-displayMetricValue(row.doubleValues[doubleIndex]));
+          const gapText=isMinimum(gap,0)?'<span class="gap-highlight">无差距</span>':gap>0?`双伤减少 <span class="gap-highlight">${formatMetric(gapDisplay)}</span>`:`单伤减少 <span class="gap-highlight">${formatMetric(gapDisplay)}</span>`;
+          return `<tr><td><span class="armor ${armorClass(row.quality)}"><span>${row.quality}甲</span><span class="armor-detail">${row.plates}格${row.variant?` ${row.variant}`:""}</span></span></td><td>${gapText}</td><td class="${singleBest}">${formatResult(row.singleValues[singleIndex])}</td><td>${singleNames}</td><td class="${doubleBest}">${formatResult(row.doubleValues[doubleIndex])}</td><td>${doubleNames}</td></tr>`;
         }).join("");
-        document.querySelector("#resultTable").style.minWidth=window.innerWidth<=600?"900px":"1200px";
+        const tableWrapWidth=document.querySelector(".table-wrap").clientWidth;
+        const naturalWidth=156+5*(window.innerWidth<=600?100:108);
+        document.querySelector("#resultTable").style.minWidth=`${Math.max(tableWrapWidth,naturalWidth)}px`;
+        requestAnimationFrame(syncDesktopRowHeights);
         return;
       }
+      document.querySelector("#resultTable").classList.remove("compare-table");
       const columns=activeColumns();
       const visibleColumns=viewMode==="all"?columns:[{name:"最少枪数",summary:true},{name:"最优词条",summary:true}];
-      document.querySelector("thead").innerHTML=`<tr><th>护甲</th>${visibleColumns.map(c=>`<th>${c.name.replaceAll("+","<br>+")}</th>`).join("")}</tr>`;
+      document.querySelector("thead").innerHTML=`<tr><th>护甲</th>${visibleColumns.map(c=>`<th>${formatAffixName(c.name)}</th>`).join("")}</tr>`;
       document.querySelector("tbody").innerHTML=lastResults.map(row=>{
         if(viewMode==="best"){
-          const measured=row.values.map(metricValue), min=Math.min(...measured), names=columns.filter((_,i)=>measured[i]===min).map(c=>c.name).join(" / ");
-          return `<tr><td><span class="armor ${armorClass(row.quality)}">${row.quality}甲 · ${row.plates}格</span></td><td class="best">${formatMetric(min)}</td><td>${names}</td></tr>`;
+          const measured=row.values.map(metricValue), min=Math.min(...measured), names=formatOptimalNames(columns.filter((_,i)=>isMinimum(measured[i],min)).map(c=>c.name));
+          return `<tr><td><span class="armor ${armorClass(row.quality)}"><span>${row.quality}甲</span><span class="armor-detail">${row.plates}格${row.variant?` ${row.variant}`:""}</span></span></td><td class="best">${formatResult(row.values[measured.indexOf(min)])}</td><td>${names}</td></tr>`;
         }
         const measured=row.values.map(metricValue), min=Math.min(...measured);
-        return `<tr><td><span class="armor ${armorClass(row.quality)}">${row.quality}甲 · ${row.plates}格</span></td>${measured.map(v=>`<td class="${v===min?"best":""}">${formatMetric(v)}</td>`).join("")}</tr>`;
+        return `<tr><td><span class="armor ${armorClass(row.quality)}"><span>${row.quality}甲</span><span class="armor-detail">${row.plates}格${row.variant?` ${row.variant}`:""}</span></span></td>${row.values.map((shots,i)=>`<td class="${isMinimum(measured[i],min)?"best":""}">${formatResult(shots)}</td>`).join("")}</tr>`;
       }).join("");
-      document.querySelector("#resultTable").style.minWidth=window.innerWidth<=600?(viewMode==="best"?"620px":"3200px"):(viewMode==="best"?"700px":"3900px");
+      const tableWrapWidth=document.querySelector(".table-wrap").clientWidth;
+      const naturalWidth=156+columns.length*(window.innerWidth<=600?100:108);
+      document.querySelector("#resultTable").style.minWidth=viewMode==="best"?"100%":`${Math.max(tableWrapWidth,naturalWidth)}px`;
+      requestAnimationFrame(syncDesktopRowHeights);
     }
 
     function render(){
@@ -854,7 +1012,11 @@
           document.querySelector("#sceneSummary").textContent=sceneLabels[mainHit];
           document.querySelector("#randomSummary").textContent=randomText;
           if(cfg.quality==="紫"){
-            lastResults=armors.map(([quality,plates,armorType],ri)=>({quality,plates,armorType,values:[expected(cfg,quality,plates,armorType,mainHit,random,{name:"无词条",effects:[],armorBreak:false,flesh:false},20260728+ri)]}));
+            const purpleColumns=[{name:"无词条",effects:[],armorBreak:false,flesh:false}];
+            lastResults=armors.map((armorConfig,ri)=>{
+              const slots=sharedProjectileSlots(cfg,armorConfig,mainHit,purpleColumns);
+              return {...armorConfig,values:[expected(cfg,armorConfig,mainHit,random,purpleColumns[0],20260728+ri,slots)]};
+            });
             affixMode="single";
             document.querySelector("#singleAffix").classList.add("active");
             document.querySelector("#doubleAffix").classList.remove("active");
@@ -862,23 +1024,37 @@
             document.querySelector("#doubleAffix").disabled=true;
             document.querySelector("#compareAffix").disabled=true;
           } else {
-            document.querySelector("#doubleAffix").disabled=false;
-            document.querySelector("#compareAffix").disabled=false;
+            const orange=cfg.quality==="橙";
+            document.querySelector("#doubleAffix").disabled=orange;
+            document.querySelector("#compareAffix").disabled=orange;
             if(affixMode==="compare"){
-              lastResults=armors.map(([quality,plates,armorType],ri)=>({
-                quality,plates,armorType,
-                singleValues:singleColumns.map((c,ci)=>expected(cfg,quality,plates,armorType,mainHit,random,c,20260728+ri*100+ci)),
-                doubleValues:doubleColumns.map((c,ci)=>expected(cfg,quality,plates,armorType,mainHit,random,c,20260728+ri*100+50+ci))
-              }));
+              const noAffix={name:"无词条",effects:[],armorBreak:false,flesh:false};
+              const singleCompareColumns=[noAffix,...columnsForQuality(singleColumns,cfg.quality)];
+              const doubleCompareColumns=[noAffix,...columnsForQuality(doubleColumns,cfg.quality)];
+              const allCompareColumns=[...singleCompareColumns,...doubleCompareColumns];
+              lastResults=armors.map((armorConfig,ri)=>{
+                const slots=sharedProjectileSlots(cfg,armorConfig,mainHit,allCompareColumns);
+                return {
+                  ...armorConfig,
+                  singleColumns:singleCompareColumns,
+                  doubleColumns:doubleCompareColumns,
+                  singleValues:singleCompareColumns.map(c=>expected(cfg,armorConfig,mainHit,random,c,20260728+ri,slots)),
+                  doubleValues:doubleCompareColumns.map(c=>expected(cfg,armorConfig,mainHit,random,c,20260728+ri,slots))
+                };
+              });
             } else {
               const columns=activeColumns();
-              lastResults=armors.map(([quality,plates,armorType],ri)=>({quality,plates,armorType,values:columns.map((c,ci)=>expected(cfg,quality,plates,armorType,mainHit,random,c,20260728+ri*columns.length+ci))}));
+              lastResults=armors.map((armorConfig,ri)=>{
+                const slots=sharedProjectileSlots(cfg,armorConfig,mainHit,columns);
+                return {...armorConfig,values:columns.map(c=>expected(cfg,armorConfig,mainHit,random,c,20260728+ri,slots))};
+              });
             }
           }
           document.querySelector("#status").textContent=`${cfg.quality==="紫"?"无词条":affixMode==="single"?"单伤":affixMode==="double"?"双伤":"单双伤对比"} · ${SAMPLES.toLocaleString()} 次随机模拟 · 期望向上取整`;
           viewMode="best";
           document.querySelector("#bestView").classList.add("active"); document.querySelector("#allView").classList.remove("active");
           drawTable();
+      syncDesktopResultHeight();
         } catch(e){ error.textContent=e.message; error.style.display="block"; }
         finally { button.textContent="重新计算"; controls.classList.remove("loading"); }
       },20);
@@ -902,6 +1078,14 @@
     document.querySelector("#ttkMetric").addEventListener("click",()=>{metricMode="ttk";document.querySelector("#ttkMetric").classList.add("active");document.querySelector("#shotsMetric").classList.remove("active");document.querySelector("#metricSummary").textContent="TTK（首枪 0ms）";drawTable();});
     document.querySelector("#bestView").addEventListener("click",()=>{viewMode="best";document.querySelector("#bestView").classList.add("active");document.querySelector("#allView").classList.remove("active");drawTable();});
     document.querySelector("#allView").addEventListener("click",()=>{viewMode="all";document.querySelector("#allView").classList.add("active");document.querySelector("#bestView").classList.remove("active");drawTable();});
+    const guideDialog=document.querySelector("#guideDialog");
+    document.querySelector("#guideButton").addEventListener("click",()=>guideDialog.showModal());
+    document.querySelector("#guideClose").addEventListener("click",()=>guideDialog.close());
+    guideDialog.addEventListener("click",event=>{
+      const bounds=guideDialog.getBoundingClientRect();
+      if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom) guideDialog.close();
+    });
+
     const mechanicsDialog=document.querySelector("#mechanicsDialog");
     document.querySelector("#mechanicsButton").addEventListener("click",()=>mechanicsDialog.showModal());
     document.querySelector("#mechanicsClose").addEventListener("click",()=>mechanicsDialog.close());
