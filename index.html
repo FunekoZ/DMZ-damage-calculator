@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DMZ 击杀枪数计算器</title>
+  <title>DMZ 枪械词条与 TTK 计算器</title>
   <style>
     :root {
       color-scheme: dark;
@@ -42,8 +42,22 @@
     .author-card { position: absolute; top: 0; right: 0; display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; }
     .author-card a { color: var(--text); text-decoration: none; }
     .author-card a:hover { color: var(--accent); }
+    .mechanics-button { min-height: 34px; padding: 0 12px; border: 1px solid var(--line-bright); border-radius: 7px; background: #0d1216; color: var(--text); cursor: pointer; font-weight: 700; }
+    .mechanics-button:hover { border-color: var(--accent); color: var(--accent); }
     .star-link { display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1px solid var(--accent); border-radius: 7px; color: var(--accent) !important; background: var(--accent-soft); font-weight: 800; }
     .star-link:hover { background: rgba(229,174,69,.23); }
+
+    .mechanics-dialog { width: min(760px, calc(100% - 32px)); max-height: min(82vh, 860px); padding: 0; border: 1px solid var(--line-bright); border-radius: 14px; background: var(--panel); color: var(--text); box-shadow: 0 28px 90px rgba(0,0,0,.65); }
+    .mechanics-dialog::backdrop { background: rgba(2,5,7,.78); backdrop-filter: blur(4px); }
+    .dialog-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 18px 20px; border-bottom: 1px solid var(--line); background: #151d23; }
+    .dialog-head h2 { margin: 0; font-size: 18px; }
+    .dialog-close { width: 36px; height: 36px; border: 1px solid var(--line-bright); border-radius: 7px; background: #0d1216; color: var(--text); cursor: pointer; font-size: 20px; }
+    .dialog-body { padding: 20px; color: #d5dce0; font-size: 13px; line-height: 1.75; }
+    .dialog-body h3 { margin: 22px 0 8px; color: var(--accent); font-size: 14px; }
+    .dialog-body h3:first-child { margin-top: 0; }
+    .dialog-body p, .dialog-body ul { margin: 8px 0; }
+    .dialog-body ul { padding-left: 20px; }
+    .formula { overflow-x: auto; margin: 10px 0; padding: 11px 13px; border: 1px solid var(--line); border-radius: 7px; background: #0b1014; color: #fff2c7; font-family: Consolas, monospace; white-space: nowrap; }
 
     .layout { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 20px; align-items: start; }
     .panel { border: 1px solid var(--line); border-radius: var(--radius); background: rgba(17, 23, 28, .94); box-shadow: 0 18px 60px rgba(0,0,0,.25); }
@@ -133,8 +147,12 @@
       .eyebrow { margin-bottom: 7px; font-size: 9px; letter-spacing: .16em; }
       h1 { font-size: 30px; line-height: 1.08; }
       .intro { margin: 10px 0 16px; font-size: 13px; line-height: 1.6; }
-      .author-card { justify-content: space-between; margin-bottom: 0; }
+      .author-card { justify-content: space-between; margin-bottom: 0; flex-wrap: wrap; }
+      .mechanics-button { min-height: 38px; }
       .star-link { min-height: 38px; padding: 0 11px; }
+      .mechanics-dialog { width: calc(100% - 20px); max-height: 90vh; }
+      .dialog-head { padding: 15px 16px; }
+      .dialog-body { padding: 16px; font-size: 12px; }
 
       .layout { gap: 14px; }
       .panel { border-radius: 10px; }
@@ -172,8 +190,8 @@
       h1 { font-size: 27px; }
       .summary { grid-template-columns: 1fr; }
       #randomInputs { grid-template-columns: 1fr; }
-      .author-card { align-items: flex-start; flex-direction: column; gap: 8px; }
-      .star-link { width: 100%; justify-content: center; }
+      .author-card { align-items: stretch; flex-direction: column; gap: 8px; }
+      .mechanics-button, .star-link { width: 100%; justify-content: center; }
       .section { padding-inline: 13px; }
     }
   </style>
@@ -181,10 +199,11 @@
 <body>
   <main class="page">
     <header class="page-header">
-      <p class="eyebrow">DMZ // SHOTS TO KILL</p>
-      <h1>击杀枪数计算器</h1>
-      <p class="intro">配置枪械、主要命中场景与随机命中子弹。系统逐发模拟护甲击破顺序，计算平均期望枪数并向上取整。</p>
+      <p class="eyebrow">DMZ // BUILD OPTIMIZER</p>
+      <h1>DMZ 枪械词条与 TTK 计算器</h1>
+      <p class="intro">评估不同交战场景下的最佳枪械词条，并检查你已有的词条组合能达到怎样的击杀枪数与 TTK。</p>
       <div class="author-card">
+        <button id="mechanicsButton" class="mechanics-button" type="button">机制与词条讲解</button>
         <span>by <a href="https://github.com/FunekoZ" target="_blank" rel="noopener noreferrer">FunekoZ</a></span>
         <a class="star-link" href="https://github.com/FunekoZ/DMZ-damage-calculator" target="_blank" rel="noopener noreferrer" title="打开 GitHub 仓库后点击 Star">★ GitHub / Star</a>
       </div>
@@ -279,6 +298,51 @@
         </div>
       </section>
     </div>
+
+    <dialog id="mechanicsDialog" class="mechanics-dialog">
+      <div class="dialog-head">
+        <h2>机制与词条讲解</h2>
+        <button id="mechanicsClose" class="dialog-close" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="dialog-body">
+        <h3>一颗子弹的基础伤害</h3>
+        <p>先根据射程取得基础伤害，再乘以枪械自身的命中部位倍率和当前词条倍率。</p>
+        <div class="formula">当前伤害 a = 射程伤害 × 部位倍率 × 词条倍率</div>
+
+        <h3>护甲未被击破</h3>
+        <p>若该部位受到护甲保护，当前伤害先乘枪械品质对护甲品质的倍率 M，再扣除护甲。</p>
+        <div class="formula">护甲伤害 = a × M</div>
+        <p>普通子弹在护甲未破时不造成直接血量伤害；带肉伤时会额外造成肉体伤害。</p>
+
+        <h3>击破护甲的这一颗子弹</h3>
+        <p>设击破前剩余护甲为 x。需要用等效的基础伤害消耗这部分护甲，子弹剩余部分直接打血。</p>
+        <div class="formula">击破护甲所需伤害 = x ÷ M</div>
+        <div class="formula">击破后的血量伤害 = a − x ÷ M</div>
+
+        <h3>倍率词条的击破弹</h3>
+        <p>先把对应部位的词条增减加入当前伤害 a，再按上面的击破公式拆分。两个倍率词条同时生效时，增减值相加，例如 +0.2 与 +0.2 得到 1.4 倍。</p>
+
+        <h3>破甲词条的击破弹</h3>
+        <p>破甲会把命中的护甲按低一级品质选取 M，再计算：</p>
+        <div class="formula">血量伤害 = a − x ÷ 破甲后的 M</div>
+        <p>橙品质的破甲仅在命中上胸或腹部护甲时生效。</p>
+
+        <h3>肉伤词条的击破弹</h3>
+        <ul>
+          <li>护甲未破：额外血量伤害 = 当前伤害 a × 0.1。</li>
+          <li>击破护甲：额外肉伤 = 剩余护甲 x × 0.1。</li>
+          <li>击破后剩余的普通伤害不再乘 0.1，直接打血。</li>
+          <li>橙品质肉伤先令该颗子弹的护甲伤害降低 10%，再处理击破与额外肉伤。</li>
+        </ul>
+
+        <h3>没有护甲覆盖的部位</h3>
+        <p>半包甲不保护腿部；躯干甲只保护上胸和腹部。命中未覆盖区域时，整颗子弹直接造成当前血量伤害，破甲与肉伤不会触发。</p>
+
+        <h3>多弹丸与 TTK</h3>
+        <p>每颗子弹按顺序独立结算；同一次开火中前一颗可以先破甲，后一颗继续打血。枪数按开火次数统计，TTK 按以下公式计算：</p>
+        <div class="formula">TTK = (击杀开火次数 − 1) × 射击间隔</div>
+      </div>
+    </dialog>
   </main>
 
   <script>
@@ -819,6 +883,14 @@
     document.querySelector("#ttkMetric").addEventListener("click",()=>{metricMode="ttk";document.querySelector("#ttkMetric").classList.add("active");document.querySelector("#shotsMetric").classList.remove("active");document.querySelector("#metricSummary").textContent="TTK（首枪 0ms）";drawTable();});
     document.querySelector("#bestView").addEventListener("click",()=>{viewMode="best";document.querySelector("#bestView").classList.add("active");document.querySelector("#allView").classList.remove("active");drawTable();});
     document.querySelector("#allView").addEventListener("click",()=>{viewMode="all";document.querySelector("#allView").classList.add("active");document.querySelector("#bestView").classList.remove("active");drawTable();});
+    const mechanicsDialog=document.querySelector("#mechanicsDialog");
+    document.querySelector("#mechanicsButton").addEventListener("click",()=>mechanicsDialog.showModal());
+    document.querySelector("#mechanicsClose").addEventListener("click",()=>mechanicsDialog.close());
+    mechanicsDialog.addEventListener("click",event=>{
+      const bounds=mechanicsDialog.getBoundingClientRect();
+      if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom) mechanicsDialog.close();
+    });
+
     applyRandomPreset("normal");
     populateWeapons(BUILT_IN_WEAPONS);
     render();
