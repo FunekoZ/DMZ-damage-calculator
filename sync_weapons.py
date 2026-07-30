@@ -30,6 +30,17 @@ def validate_weapons(weapons: object) -> list[dict]:
         projectiles = weapon.get("projectiles_per_shot", 1)
         if not isinstance(projectiles, int) or isinstance(projectiles, bool) or projectiles < 1:
             raise ValueError(f"{prefix}的每次开火弹丸数必须是大于等于 1 的整数")
+        flesh_ratio = weapon.get("built_in_flesh_ratio", 0)
+        if (
+            not isinstance(flesh_ratio, (int, float))
+            or isinstance(flesh_ratio, bool)
+            or flesh_ratio < 0
+            or flesh_ratio > 1
+        ):
+            raise ValueError(f"{prefix}的自带肉伤比例必须是 0 到 1 之间的数字")
+        unarmored_multiplier = weapon.get("unarmored_damage_multiplier", 1)
+        if not positive_number(unarmored_multiplier):
+            raise ValueError(f"{prefix}的无甲伤害倍率必须是正数")
 
         multipliers = weapon.get("region_multipliers")
         if not isinstance(multipliers, dict) or any(not positive_number(multipliers.get(region)) for region in REGIONS):
