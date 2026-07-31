@@ -92,9 +92,11 @@
     .weapon-select-trigger { display: flex; width: 100%; height: 40px; padding: 0 11px; border: 1px solid var(--line-bright); border-radius: 7px; background: #0d1216; color: var(--text); align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; text-align: left; }
     .weapon-select-trigger::after { flex: 0 0 auto; color: var(--muted); content: "▾"; }
     .weapon-select-row.open .weapon-select-trigger { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-    .weapon-select-menu { display: none; position: absolute; top: calc(100% + 5px); left: 0; z-index: 30; overflow-y: auto; width: 100%; max-height: min(360px, 45vh); padding: 4px; border: 1px solid var(--line-bright); border-radius: 7px; background: #11181d; box-shadow: 0 12px 32px rgba(0,0,0,.55); overscroll-behavior: contain; }
-    .weapon-select-row.open .weapon-select-menu { display: grid; }
-    .weapon-select-option { min-height: 36px; padding: 7px 9px; border: 0; border-radius: 5px; background: transparent; color: var(--text); cursor: pointer; text-align: left; }
+    .weapon-select-menu { display: none; position: absolute; top: calc(100% + 5px); left: 0; z-index: 30; overflow-y: auto; width: 100%; max-height: min(360px, 45vh); padding: 5px; border: 1px solid var(--line-bright); border-radius: 7px; background: #11181d; box-shadow: 0 12px 32px rgba(0,0,0,.55); overscroll-behavior: contain; }
+    .weapon-select-row.open .weapon-select-menu { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 6px; }
+    .weapon-select-group { display: grid; min-width: 0; align-content: start; gap: 2px; }
+    .weapon-select-group-title { position: sticky; top: -5px; z-index: 1; padding: 6px 7px 5px; background: #11181d; color: var(--muted); font-size: 10px; font-weight: 700; text-align: center; }
+    .weapon-select-option { overflow: hidden; min-height: 34px; padding: 6px 7px; border: 0; border-radius: 5px; background: transparent; color: var(--text); cursor: pointer; font-size: 11px; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
     .weapon-select-option:hover, .weapon-select-option.active { background: var(--accent-soft); color: var(--accent); }
     .recommend {
       height: 40px; padding: 0 12px; border: 1px solid var(--accent); border-radius: 7px;
@@ -184,12 +186,15 @@
     .note-separator.leading { margin-left: 0; }
     .probability-notes { display: grid; gap: 2px; grid-column: 1 / -1; margin-top: 5px; text-align: center; }
     .probability-affix { color: #e99a9a; }
+    .ranking-help { display: inline-block; align-self: center; flex: 0 0 7px; width: 7px; height: 7px; margin: 0 1px 0 -4px; color: var(--muted); line-height: 0; }
+    .view-toggle .ranking-help-button { display: block; min-width: 0; width: 7px !important; height: 7px !important; min-height: 0; padding: 0 !important; border: 1px solid currentColor; border-radius: 50%; background: transparent; color: inherit; cursor: pointer; font-size: 4px; font-weight: 800; line-height: 1; transform: translateY(-4px); }
     .ranking-entry { display: grid; grid-template-columns: 18px minmax(0, 1fr) auto; gap: 3px 7px; align-items: center; min-width: 190px; padding: 3px 2px; text-align: left; }
     .ranking-position { color: var(--accent); font-size: 11px; text-align: center; }
     .ranking-name { overflow: hidden; color: var(--text); font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
     .ranking-ttk { color: #fff2c7; white-space: nowrap; }
     .loading { opacity: .65; pointer-events: none; }
     .error { display: none; margin-top: 10px; color: #ff8c8c; font-size: 12px; }
+    .site-counter { margin: 18px 0 0; color: rgba(147,160,170,.55); font-size: 10px; text-align: center; }
 
     @media (max-width: 1050px) {
       .page { width: min(100% - 24px, 1680px); padding-top: 24px; }
@@ -361,6 +366,7 @@
               <button id="shotsMetric" class="active" type="button">击杀枪数</button>
               <button id="ttkMetric" type="button">TTK</button>
               <button id="rankingMetric" type="button">排行</button>
+              <span class="ranking-help"><button id="rankingHelp" class="ranking-help-button" type="button" aria-label="查看排行说明" title="查看排行说明">?</button></span>
             </div>
             <div class="view-toggle" aria-label="结果展示方式">
               <button id="bestView" class="active" type="button">最优词条</button>
@@ -437,8 +443,37 @@
         <div class="formula">TTK = (击杀开火次数 − 1) × 射击间隔</div>
       </div>
     </dialog>
+
+    <dialog id="rankingGuideDialog" class="mechanics-dialog">
+      <div class="dialog-head">
+        <h2>枪械 TTK 排行说明</h2>
+        <button id="rankingGuideClose" class="dialog-close" type="button" aria-label="关闭">×</button>
+      </div>
+      <div class="dialog-body">
+        <h3>排行比较什么</h3>
+        <p>排行会使用当前统一条件计算全部枪械，并按每种护甲分别列出 TTK 最低的前五名。左侧“选择枪械”只用于普通计算和决定可选择的射程段数，不会限制排行中的枪械范围。</p>
+
+        <h3>仍然生效的设置</h3>
+        <ul>
+          <li>枪械品质：所有参赛枪械统一使用当前品质；J358 最高仅支持橙品质。</li>
+          <li>主要命中与随机命中：所有枪械统一采用当前命中设定。</li>
+          <li>词条类型：进入排行后可在“无词条 / 单伤 / 双伤”之间选择。</li>
+        </ul>
+
+        <h3>射程段数</h3>
+        <p>排行按射程段序号比较，而不是按相同米数比较。选择第一段时所有枪械使用自己的第一段伤害，选择第二段时使用各自第二段伤害。</p>
+        <p>若选择的段数超过某把枪械的总段数，该枪械使用自己的最后一段。例如选择第五段时，只有四段的枪械会使用第四段参与排行。</p>
+
+        <h3>TTK 与排序</h3>
+        <p>每把枪先在选定词条类型中取得最佳目标枪数，再按自身射击间隔计算：</p>
+        <div class="formula">TTK = (目标枪数 − 1) × 射击间隔</div>
+        <p>优先按 TTK 从低到高排序；TTK 相同时，枪数更少者优先。</p>
+      </div>
+    </dialog>
+    <p class="site-counter" id="busuanzi_container_site_pv">页面访问量 <span id="busuanzi_value_site_pv">统计中…</span> 次</p>
   </main>
 
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
   <script>
     const HEALTH = 100, ARMOR_PER_PLATE = 50, SAMPLES = 5000, RANKING_SAMPLES = 100;
     const levels = { 紫: 0, 橙: 1, 红: 2, 究: 3 };
@@ -813,7 +848,7 @@
   },
   {
     "name": "Type19 (全自动)",
-    "shot_interval_ms": 80,
+    "shot_interval_ms": 200,
     "damage_ranges": [
       {
         "min": 0,
@@ -846,7 +881,7 @@
     }
   },
   {
-    "name": "J358 (究极弹匣)",
+    "name": "J358 (双究极)",
     "shot_interval_ms": 45,
     "built_in_flesh_ratio": 0.4,
     "damage_ranges": [
@@ -881,8 +916,8 @@
     }
   },
   {
-    "name": "J358 (无弹匣)",
-    "shot_interval_ms": 45,
+    "name": "J358 (无究极)",
+    "shot_interval_ms": 360,
     "damage_ranges": [
       {
         "min": 0,
@@ -1197,6 +1232,29 @@
       document.querySelector("#weaponSummary").textContent=`${weaponConfig.name} · ${quality}`;
       updateDamageRanges();
     }
+    function isUltimateWeapon(name){
+      if(name.includes("无究极")||name.includes("无弹匣")||name.includes("单点")||name.includes("倍率枪管")) return false;
+      return name.includes("究极")||name.includes("射程枪管")||name.includes("全自动");
+    }
+    function weaponOption(item){
+      const button=document.createElement("button");
+      button.type="button";
+      button.className="weapon-select-option";
+      button.dataset.value=String(item.index);
+      button.setAttribute("role","option");
+      button.textContent=item.config.name;
+      button.title=item.config.name;
+      return button;
+    }
+    function weaponGroup(title,items){
+      const group=document.createElement("div");
+      group.className="weapon-select-group";
+      const heading=document.createElement("span");
+      heading.className="weapon-select-group-title";
+      heading.textContent=title;
+      group.append(heading,...items.map(weaponOption));
+      return group;
+    }
     function populateWeapons(items){
       const validated=items.map((weapon,index)=>{
         try { return {raw:weapon,config:validateWeapon(weapon),index}; }
@@ -1208,15 +1266,10 @@
       const selectedIndex=Math.min(+select.dataset.selectedIndex||0,weapons.length-1);
       select.value=String(selectedIndex);
       const menu=document.querySelector("#weaponSelectMenu");
-      menu.replaceChildren(...validated.map(item=>{
-        const button=document.createElement("button");
-        button.type="button";
-        button.className="weapon-select-option";
-        button.dataset.value=String(item.index);
-        button.setAttribute("role","option");
-        button.textContent=item.config.name;
-        return button;
-      }));
+      menu.replaceChildren(
+        weaponGroup("带究极配件",validated.filter(item=>isUltimateWeapon(item.config.name))),
+        weaponGroup("不带究极配件",validated.filter(item=>!isUltimateWeapon(item.config.name)))
+      );
       syncWeaponPicker(selectedIndex);
       setWeapon(weapons[selectedIndex]);
       applyWeaponQualityLimit();
@@ -1240,7 +1293,7 @@
     function applyRecommendedPreset(){
       const weaponName=weaponConfig.name;
       let mainHit="upper_chest", preset="tapfire";
-      if(weaponName.startsWith("Fennec")||weaponName.startsWith("Type19")||weaponName==="J358 (究极弹匣)"||weaponName==="拉克曼556 (究极弹匣)"){
+      if(weaponName.startsWith("Fennec")||weaponName.startsWith("Type19")||weaponName.startsWith("J358")||weaponName==="拉克曼556 (究极弹匣)"){
         mainHit="lower_arm";
         preset=weaponName==="Type19 (单点)"?"tapfire":"normal";
       }
@@ -1598,20 +1651,16 @@
       if(rankingAffixMode==="single"||quality==="橙") return columnsForQuality(singleColumns,quality);
       return columnsForQuality(doubleColumns,quality);
     }
-    function distanceForCurrentRange(){
-      const range=weaponConfig.damageRanges[Math.min(+document.querySelector("#damageRange").value,weaponConfig.damageRanges.length-1)];
-      return Number(((range.min+range.max)/2).toFixed(1));
-    }
+    function rankingRangeIndex(){ return Math.max(0,+document.querySelector("#damageRange").value||0); }
+    function rankingRangeLabel(){ return `第 ${rankingRangeIndex()+1} 段射程`; }
     function calculateRankings(){
-      const quality=document.querySelector("#gunQuality").value, mainHit=document.querySelector("#mainHit").value, random=randomHits();
-      const currentRange=weaponConfig.damageRanges[Math.min(+document.querySelector("#damageRange").value,weaponConfig.damageRanges.length-1)];
-      const distance=(currentRange.min+currentRange.max)/2;
+      const quality=document.querySelector("#gunQuality").value, mainHit=document.querySelector("#mainHit").value, random=randomHits(), rangeIndex=rankingRangeIndex();
       rankingResults=armors.map((armorConfig,armorIndex)=>{
         const entries=weapons
           .map((weapon,weaponIndex)=>{
             const config=validateWeapon(weapon);
             if(config.name.startsWith("J358")&&["红","究"].includes(quality)) return null;
-            const selectedRange=config.damageRanges.find(range=>distance>=range.min&&distance<range.max)||config.damageRanges.at(-1);
+            const selectedRange=config.damageRanges[Math.min(rangeIndex,config.damageRanges.length-1)];
             const cfg={...config,quality,damage:+selectedRange.damage};
             const columns=rankingColumnsForQuality(quality);
             const eligible=columns.map((column,index)=>columnCanAffectHits(column,mainHit,random)?index:-1).filter(index=>index>=0);
@@ -1706,10 +1755,10 @@
             const randomText=Object.entries(random).filter(([,n])=>n).map(([region,count])=>`${regionLabels[region]}×${count}`).join(" / ")||"无";
             calculateRankings();
             document.querySelector("#weaponSummary").textContent=`全部枪械 · ${quality}`;
-            document.querySelector("#rangeSummary").textContent=`约 ${distanceForCurrentRange()} 米`;
+            document.querySelector("#rangeSummary").textContent=rankingRangeLabel();
             document.querySelector("#sceneSummary").textContent=sceneLabels[mainHit];
             document.querySelector("#randomSummary").textContent=randomText;
-            document.querySelector("#status").textContent=`${weapons.length} 把枪械 · ${quality}品质 · ${rankingAffixMode==="none"?"无词条":rankingAffixMode==="single"?"单伤":"双伤"}排行 · 当前命中设定 · 各护甲 TTK 前五名`;
+            document.querySelector("#status").textContent=`${weapons.length} 把枪械 · ${quality}品质 · ${rankingAffixMode==="none"?"无词条":rankingAffixMode==="single"?"单伤":"双伤"}排行 · ${rankingRangeLabel()} · 当前命中设定 · 各护甲 TTK 前五名`;
             document.querySelector("#metricSummary").textContent="枪械 TTK 排行";
             drawTable();
             syncDesktopResultHeight();
@@ -1833,6 +1882,13 @@
     document.querySelector("#shotsMetric").addEventListener("click",()=>setMetricMode("shots"));
     document.querySelector("#ttkMetric").addEventListener("click",()=>setMetricMode("ttk"));
     document.querySelector("#rankingMetric").addEventListener("click",()=>setMetricMode("ranking"));
+    const rankingGuideDialog=document.querySelector("#rankingGuideDialog");
+    document.querySelector("#rankingHelp").addEventListener("click",()=>rankingGuideDialog.showModal());
+    document.querySelector("#rankingGuideClose").addEventListener("click",()=>rankingGuideDialog.close());
+    rankingGuideDialog.addEventListener("click",event=>{
+      const bounds=rankingGuideDialog.getBoundingClientRect();
+      if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom) rankingGuideDialog.close();
+    });
     document.querySelector("#bestView").addEventListener("click",()=>{viewMode="best";document.querySelector("#bestView").classList.add("active");document.querySelector("#allView").classList.remove("active");drawTable();});
     document.querySelector("#allView").addEventListener("click",()=>{
       if(affixMode==="compare"){

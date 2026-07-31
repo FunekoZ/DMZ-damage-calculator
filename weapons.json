@@ -75,7 +75,7 @@
   },
   {
     "name": "Type19 (全自动)",
-    "shot_interval_ms": 80,
+    "shot_interval_ms": 200,
     "damage_ranges": [
       { "min": 0, "max": 17.9, "damage": 28 },
       { "min": 17.9, "max": 37.3, "damage": 24 },
@@ -85,7 +85,7 @@
     "region_multipliers": { "head": 1.5, "upper_chest": 1.1, "abdomen": 1.0, "upper_arm": 1.1, "lower_arm": 1.1, "legs": 1.0 }
   },
   {
-    "name": "J358 (究极弹匣)",
+    "name": "J358 (双究极)",
     "shot_interval_ms": 45,
     "built_in_flesh_ratio": 0.4,
     "damage_ranges": [
@@ -97,8 +97,8 @@
     "region_multipliers": { "head": 1.5, "upper_chest": 1.1, "abdomen": 1.0, "upper_arm": 1.0, "lower_arm": 1.0, "legs": 1.0 }
   },
   {
-    "name": "J358 (无弹匣)",
-    "shot_interval_ms": 45,
+    "name": "J358 (无究极)",
+    "shot_interval_ms": 360,
     "damage_ranges": [
       { "min": 0, "max": 6.5, "damage": 92 },
       { "min": 6.5, "max": 23.4, "damage": 70 },
