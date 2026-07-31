@@ -53,6 +53,8 @@ python sync_weapons.py
 - `name`：枪械名称。
 - `shot_interval_ms`：射击间隔，单位毫秒。
 - `projectiles_per_shot`：每次开火的弹丸数，短剑和喷子可配置，默认 `1`。
+- `built_in_flesh_ratio`：枪械配件自带的肉伤比例，默认 `0`；仅命中护甲时额外扣血，破甲后的普通伤害不继续享受该比例。
+- `unarmored_damage_multiplier`：命中无甲肉体及击破弹溢出肉体部分的伤害倍率，默认 `1`。
 - `damage_ranges`：射程分段伤害，区间为 `min ≤ 距离 < max`。
 - `region_multipliers`：各命中部位倍率。
 
