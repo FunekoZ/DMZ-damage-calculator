@@ -14,9 +14,12 @@
 
 ## 项目文件
 
-- [index.html](index.html)：完整前端与计算逻辑，可离线运行。
+- [index.html](index.html)：页面结构与静态资源入口，可直接双击离线运行。
+- [assets/css/app.css](assets/css/app.css)：页面外观、布局与窄屏响应式样式。
+- [assets/js/weapons-data.js](assets/js/weapons-data.js)：由枪械配置生成的离线回退数据，需在应用脚本前加载。
+- [assets/js/app.js](assets/js/app.js)：计算、状态、渲染与交互逻辑，并在条件允许时读取最新枪械配置。
 - [weapons.json](weapons.json)：枪械配置源文件，便于快速修改或新增枪械。
-- [sync_weapons.py](sync_weapons.py)：将枪械配置同步进单文件前端。
+- [sync_weapons.py](sync_weapons.py)：校验枪械配置并同步到离线回退数据脚本。
 - [README.md](README.md)：项目规则与维护说明。
 
 修改 [weapons.json](weapons.json) 后运行：
