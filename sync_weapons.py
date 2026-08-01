@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 WEAPONS_PATH = ROOT / "weapons.json"
-HTML_PATH = ROOT / "index.html"
+WEAPONS_SCRIPT_PATH = ROOT / "assets" / "js" / "weapons-data.js"
 REGIONS = {"head", "upper_chest", "abdomen", "upper_arm", "lower_arm", "legs"}
 
 
@@ -72,19 +72,19 @@ def main() -> None:
     weapons = validate_weapons(json.loads(WEAPONS_PATH.read_text(encoding="utf-8")))
 
     serialized = json.dumps(weapons, ensure_ascii=False, indent=2)
-    html = HTML_PATH.read_text(encoding="utf-8")
-    html, count = re.subn(
+    script = WEAPONS_SCRIPT_PATH.read_text(encoding="utf-8")
+    script, count = re.subn(
         r"const BUILT_IN_WEAPONS = \[.*?\n\];",
         f"const BUILT_IN_WEAPONS = {serialized};",
-        html,
+        script,
         count=1,
         flags=re.DOTALL,
     )
     if count != 1:
-        raise ValueError("无法定位 index.html 中的 BUILT_IN_WEAPONS")
+        raise ValueError("无法定位 assets/js/weapons-data.js 中的 BUILT_IN_WEAPONS")
 
-    HTML_PATH.write_text(html, encoding="utf-8")
-    print("已同步：weapons.json -> index.html")
+    WEAPONS_SCRIPT_PATH.write_text(script, encoding="utf-8")
+    print("已同步：weapons.json -> assets/js/weapons-data.js")
 
 
 if __name__ == "__main__":
