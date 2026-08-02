@@ -4,14 +4,24 @@
 
 ## 项目结构与脚本边界
 
-- `index.html`：只维护页面 DOM 结构和静态资源加载顺序。
-- `assets/css/app.css`：维护全部外观、布局和响应式样式。
-- `assets/js/weapons-data.js`：由 `sync_weapons.py` 生成的内置枪械回退数据，不应手工维护。
-- `assets/js/app.js`：维护计算、状态、渲染、交互以及可选的 `weapons.json` 刷新逻辑。
-- `weapons.json`：可编辑的枪械配置源文件；修改后运行 `python sync_weapons.py`。
-- `sync_weapons.py`：校验 `weapons.json` 并重新生成回退数据声明。
+先查看 [docs/INDEX.md](docs/INDEX.md) 定位目标文件，完整依赖顺序见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
 
-`weapons-data.js` 与 `app.js` 使用经典脚本共享全局作用域，加载顺序不得颠倒。必须继续支持直接双击打开 `index.html`；在 `file://` 下无法读取 `weapons.json` 时，应用使用 `BUILT_IN_WEAPONS` 离线运行。
+- `index.html`：只维护页面 DOM 结构和静态资源加载顺序。
+- `assets/css/foundation.css`：设计变量、全局基础、页头、公告与对话框。
+- `assets/css/controls.css`：布局、控制区、输入、按钮和摘要。
+- `assets/css/results.css`：结果表、推荐提示、排行和曲线。
+- `assets/css/responsive.css`：响应式覆盖。
+- `assets/js/domain/config.js`：护甲、场景和词条定义。
+- `assets/js/domain/calculator.js`：伤害模拟、排列枚举和随机采样。
+- `assets/js/domain/recommendations.js`：推荐规则、概率注释与词条格式化。
+- `assets/js/data/weapon-repository.js`：枪械校验和载入。
+- `assets/js/features/`：射程曲线、排行和导出。
+- `assets/js/ui/`：控件、结果表与布局同步。
+- `assets/js/app/`：共享状态、计算编排、事件和初始化。
+- `assets/js/weapons-data.js`：由 `sync_weapons.py` 生成，不应手工维护。
+- `weapons.json`：可编辑的枪械配置源文件；修改后运行 `python sync_weapons.py`。
+
+所有 JavaScript 都是按顺序加载的经典脚本并共享顶层词法作用域。必须继续支持直接双击打开 `index.html`；在 `file://` 下应用使用 `BUILT_IN_WEAPONS` 离线运行。
 
 ## 核心数据
 
