@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DMZ 枪械词条与 TTK 计算器</title>
-  <link rel="stylesheet" href="assets/css/app.css">
+  <link rel="stylesheet" href="assets/css/foundation.css">
+  <link rel="stylesheet" href="assets/css/controls.css">
+  <link rel="stylesheet" href="assets/css/results.css">
+  <link rel="stylesheet" href="assets/css/responsive.css">
 
 </head>
 <body>
@@ -132,28 +135,30 @@
         <div class="panel results">
           <div class="result-head">
             <div><h2>护甲 × 词条击杀枪数</h2><span id="status">等待计算</span><span id="recommendationLegend" class="recommendation-legend" hidden>金色：最广泛场景下的最优解，最推荐</span></div>
-            <div class="view-toggle" aria-label="词条数量">
+            <div class="view-toggle affix-toggle" aria-label="词条数量">
               <button id="singleAffix" class="active" type="button">单伤</button>
               <button id="doubleAffix" type="button">双伤</button>
               <button id="compareAffix" type="button">对比</button>
               <button id="curveAffix" type="button">曲线</button>
               <span id="curveHelpWrap" class="ranking-help"><button id="curveHelp" class="ranking-help-button" type="button" aria-label="查看曲线说明" title="查看曲线说明">?</button></span>
             </div>
-            <div class="view-toggle" aria-label="计算指标">
+            <div class="view-toggle metric-toggle" aria-label="计算指标">
               <button id="shotsMetric" class="active" type="button">击杀枪数</button>
               <button id="ttkMetric" type="button">TTK</button>
               <button id="rankingMetric" type="button">排行</button>
               <span class="ranking-help"><button id="rankingHelp" class="ranking-help-button" type="button" aria-label="查看排行说明" title="查看排行说明">?</button></span>
             </div>
-            <div class="view-toggle" aria-label="结果展示方式">
+            <div class="view-toggle display-toggle" aria-label="结果展示方式">
               <button id="bestView" class="active" type="button">最优词条</button>
               <button id="allView" type="button">总表</button>
             </div>
+            <button id="exportTable" class="export-button" type="button">导出表格</button>
           </div>
           <div class="table-wrap"><table id="resultTable"><thead></thead><tbody></tbody></table></div>
           <div id="curvePanel" class="curve-panel">
             <div class="curve-controls">
               <label><span>曲线词条</span><select id="curveAffixSelect"></select></label>
+              <button id="exportCurve" class="export-button" type="button">导出曲线数据</button>
             </div>
             <div id="curveChartWrap" class="curve-chart-wrap">
               <svg id="rangeCurveChart" role="img" aria-label="不同护甲随射程变化的击杀枪数或 TTK 曲线"></svg>
@@ -288,6 +293,19 @@
 
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
   <script src="assets/js/weapons-data.js"></script>
-  <script src="assets/js/app.js"></script>
+  <script src="assets/js/domain/config.js"></script>
+  <script src="assets/js/ui/random-inputs.js"></script>
+  <script src="assets/js/domain/calculator.js"></script>
+  <script src="assets/js/data/weapon-repository.js"></script>
+  <script src="assets/js/app/state.js"></script>
+  <script src="assets/js/domain/recommendations.js"></script>
+  <script src="assets/js/features/range-curve.js"></script>
+  <script src="assets/js/ui/controls.js"></script>
+  <script src="assets/js/ui/layout.js"></script>
+  <script src="assets/js/features/ranking.js"></script>
+  <script src="assets/js/ui/results-table.js"></script>
+  <script src="assets/js/features/export.js"></script>
+  <script src="assets/js/app/render.js"></script>
+  <script src="assets/js/app/events.js"></script>
 </body>
 </html>
