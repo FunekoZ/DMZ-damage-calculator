@@ -71,7 +71,8 @@ def validate_weapons(weapons: object) -> list[dict]:
 def main() -> None:
     weapons = validate_weapons(json.loads(WEAPONS_PATH.read_text(encoding="utf-8")))
 
-    serialized = json.dumps(weapons, ensure_ascii=False, indent=2)
+    serialized_items = [json.dumps(weapon, ensure_ascii=False, separators=(",", ":")) for weapon in weapons]
+    serialized = "[\n" + ",\n".join(f"  {item}" for item in serialized_items) + "\n]"
     script = WEAPONS_SCRIPT_PATH.read_text(encoding="utf-8")
     script, count = re.subn(
         r"const BUILT_IN_WEAPONS = \[.*?\n\];",
