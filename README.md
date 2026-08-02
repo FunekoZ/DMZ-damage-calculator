@@ -14,13 +14,20 @@
 
 ## 项目文件
 
-- [index.html](index.html)：页面结构与静态资源入口，可直接双击离线运行。
-- [assets/css/app.css](assets/css/app.css)：页面外观、布局与窄屏响应式样式。
-- [assets/js/weapons-data.js](assets/js/weapons-data.js)：由枪械配置生成的离线回退数据，需在应用脚本前加载。
-- [assets/js/app.js](assets/js/app.js)：计算、状态、渲染与交互逻辑，并在条件允许时读取最新枪械配置。
-- [weapons.json](weapons.json)：枪械配置源文件，便于快速修改或新增枪械。
-- [sync_weapons.py](sync_weapons.py)：校验枪械配置并同步到离线回退数据脚本。
-- [README.md](README.md)：项目规则与维护说明。
+项目已按职责拆分。维护局部功能时先查看 [docs/INDEX.md](docs/INDEX.md)，无需读取全部源码。
+
+- [index.html](index.html)：页面结构与静态资源加载顺序，可直接双击离线运行。
+- [assets/css/](assets/css/)：按基础、控制区、结果区和响应式规则拆分的样式。
+- [assets/js/domain/](assets/js/domain/)：词条配置、伤害模拟、随机排列和推荐规则。
+- [assets/js/data/](assets/js/data/)：枪械校验和加载。
+- [assets/js/features/](assets/js/features/)：射程曲线、排行和导出。
+- [assets/js/ui/](assets/js/ui/)：输入控件、表格与布局同步。
+- [assets/js/app/](assets/js/app/)：共享状态、计算编排、事件和初始化。
+- [assets/js/weapons-data.js](assets/js/weapons-data.js)：由枪械配置生成的离线回退数据，不应手工修改。
+- [weapons.json](weapons.json)：枪械配置唯一手写数据源。
+- [sync_weapons.py](sync_weapons.py)：校验枪械配置并同步离线回退数据。
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)：脚本依赖、职责和数据流。
+- [docs/WEAPON_DATA.md](docs/WEAPON_DATA.md)：枪械字段与更新步骤。
 
 修改 [weapons.json](weapons.json) 后运行：
 

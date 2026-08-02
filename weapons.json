@@ -154,6 +154,28 @@
     "region_multipliers": { "head": 1.5, "upper_chest": 1.1, "abdomen": 1.0, "upper_arm": 1.0, "lower_arm": 1.1, "legs": 1.0 }
   },
   {
+    "name": "AK47 (究极弹匣)",
+    "shot_interval_ms": 85,
+    "built_in_flesh_ratio": 0.4,
+    "damage_ranges": [
+      { "min": 0, "max": 21, "damage": 25 },
+      { "min": 31, "max": 31.5, "damage": 22 },
+      { "min": 31.5, "max": 46.8, "damage": 17 },
+      { "min": 46.8, "max": 60, "damage": 15 }
+    ],
+    "region_multipliers": { "head": 1.55, "upper_chest": 1.1, "abdomen": 1.0, "upper_arm": 1.1, "lower_arm": 1.1, "legs": 1.0 }
+  },
+  {
+    "name": "AK47 (无弹匣)",
+    "shot_interval_ms": 110,
+    "damage_ranges": [
+      { "min": 0, "max": 24, "damage": 33 },
+      { "min": 24, "max": 36, "damage": 26 },
+      { "min": 36, "max": 60, "damage": 23 }
+    ],
+    "region_multipliers": { "head": 1.55, "upper_chest": 1.1, "abdomen": 1.0, "upper_arm": 1.1, "lower_arm": 1.1, "legs": 1.0 }
+  },
+  {
     "name": "ISO",
     "shot_interval_ms": 68,
     "damage_ranges": [
