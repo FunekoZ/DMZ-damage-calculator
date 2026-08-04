@@ -23,7 +23,7 @@
       1:["上半0.2","upper_body"], 2:["躯干0.2","torso"], 3:["手臂0.2","arms"], 4:["头部0.3","head03"],
       5:["头部0.5","head05"], 6:["腿部0.2","legs"], 7:["破甲","armorBreak"], 8:["肉伤","flesh"]
     };
-    const combinations = [[1,2],[1,3],[1,4],[1,6],[1,7],[1,8],[2,5],[3,5],[4,5],[6,5],[2,7],[2,8],[3,7],[3,8],[4,7],[4,8],[7,8]];
+    const combinations = [[1,2],[1,3],[1,4],[1,6],[1,7],[2,5],[3,5],[4,5],[6,5],[2,7],[2,8],[3,7],[3,8],[4,7],[4,8],[7,8]];
     const makeColumn = nums => ({
       name: nums.map(n => affixes[n][0]).join("+"),
       effects: nums.map(n => affixes[n][1]).filter(x => !["armorBreak","flesh"].includes(x)),
