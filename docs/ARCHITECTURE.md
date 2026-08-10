@@ -15,6 +15,8 @@ domain/config.js
   ↓
 ui/random-inputs.js
   ↓
+ui/custom-select.js
+  ↓
 domain/calculator.js
   ↓
 data/weapon-repository.js
@@ -56,8 +58,10 @@ app/events.js
 - `app/state.js`：跨功能共享的运行时状态和曲线视觉常量。
 - `features/range-curve.js`：射程曲线数据与 SVG 渲染。
 - `features/ranking.js`：全枪械 TTK 排行数据和排行表。
+- `features/comparison.js`：同枪不同品质、词条及具体射程的双方案对比。
 - `features/export.js`：Excel XML 生成与各模式数据导出。
 - `ui/random-inputs.js`：随机命中控件初始化。
+- `ui/custom-select.js`：除枪械双列选择器外的通用自定义下拉菜单，统一最大高度和纵向滚动。
 - `ui/controls.js`：枪械选择器、品质限制、预设和自动重算。
 - `ui/layout.js`：桌面结果区域与表格尺寸同步。
 - `ui/results-table.js`：普通、总表、对比和曲线视图分派。

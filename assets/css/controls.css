@@ -21,6 +21,17 @@
       outline: none; background: #0d1216; color: var(--text);
     }
     input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .custom-select { position: relative; min-width: 0; width: 100%; }
+    .custom-select-native { display: none; }
+    .custom-select-trigger { display: flex; width: 100%; height: 40px; padding: 0 11px; border: 1px solid var(--line-bright); border-radius: 7px; background: #0d1216; color: var(--text); align-items: center; justify-content: space-between; gap: 8px; cursor: pointer; text-align: left; }
+    .custom-select-trigger::after { flex: 0 0 auto; color: var(--muted); content: "▾"; }
+    .custom-select-trigger:disabled { opacity: .5; cursor: not-allowed; }
+    .custom-select.open .custom-select-trigger { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    .custom-select-menu { display: none; position: absolute; top: calc(100% + 5px); left: 0; z-index: 40; overflow-y: auto; width: max(100%, 190px); max-height: min(260px, 42vh); padding: 5px; border: 1px solid var(--line-bright); border-radius: 7px; background: #11181d; box-shadow: 0 12px 32px rgba(0,0,0,.55); overscroll-behavior: contain; }
+    .custom-select.open .custom-select-menu { display: grid; gap: 2px; }
+    .custom-select-option { overflow: hidden; min-height: 34px; padding: 6px 8px; border: 0; border-radius: 5px; background: transparent; color: var(--text); cursor: pointer; font-size: 11px; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+    .custom-select-option:hover, .custom-select-option.active { background: var(--accent-soft); color: var(--accent); }
+    .custom-select-option:disabled { opacity: .35; cursor: not-allowed; }
     .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     #randomInputs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
     .random-grid { display: grid; grid-template-columns: minmax(0, 1fr) 44px; gap: 5px; align-items: center; margin: 0; }
