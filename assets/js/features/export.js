@@ -49,19 +49,15 @@
       const metricLabel=metricMode==="shots"?"击杀枪数":"TTK（ms）", quality=document.querySelector("#gunQuality").value;
       if(metricMode==="ranking"){
         const rows=[["护甲","名次","枪械名称","实际参与品质","击杀枪数","TTK（ms）"]];
-        rankingResults.forEach(row=>row.entries.forEach((entry,index)=>rows.push([armorExportName(row),index+1,entry.name,entry.quality,entry.shots,entry.ttk])));
-        downloadWorkbook(`DMZ-枪械排行-${quality}-${rankingRangeLabel()}`,[{name:"枪械排行",rows},{name:"导出条件",rows:currentMetadata([["排行词条",rankingAffixMode==="none"?"无词条":rankingAffixMode==="single"?"单伤":"双伤"],["射程段",rankingRangeLabel()]])}]);
+        rankingResults.forEach(row=>rankingEntriesAtDistance(row,rankingDistance).forEach((entry,index)=>rows.push([armorExportName(row),index+1,entry.name,entry.quality,entry.shots,entry.ttk])));
+        downloadWorkbook(`DMZ-枪械排行-${quality}-${rankingDistanceText()}`,[{name:"枪械排行",rows},{name:"导出条件",rows:currentMetadata([["排行词条",rankingAffixMode==="none"?"无词条":rankingAffixMode==="single"?"单伤最优":"双伤最优"],["排行射程",rankingDistanceText()]])}]);
         return;
       }
       if(affixMode==="compare"){
-        const rows=[["护甲",`单双伤差距（${metricLabel}）`,`单伤最优（${metricLabel}）`,"单伤词条",`双伤最优（${metricLabel}）`,"双伤词条"]];
-        lastResults.forEach(row=>{
-          const singlePlan=recommendationPlan(row.singleValues,row.singleEligible), doublePlan=recommendationPlan(row.doubleValues,row.doubleEligible);
-          const singleValue=metricMode==="shots"?singlePlan.targetShots:(singlePlan.targetShots-1)*weaponConfig.shotIntervalMs;
-          const doubleValue=metricMode==="shots"?doublePlan.targetShots:(doublePlan.targetShots-1)*weaponConfig.shotIntervalMs;
-          rows.push([armorExportName(row),Math.abs(singleValue-doubleValue),singleValue,recommendedAffixText(row.singleColumns,singlePlan),doubleValue,recommendedAffixText(row.doubleColumns,doublePlan)]);
-        });
-        downloadWorkbook(`DMZ-单双伤对比-${weaponConfig.name}-${quality}`,[{name:"单双伤对比",rows},{name:"导出条件",rows:currentMetadata([["展示方式","单双伤对比"]])}]);
+        const aLabel=comparisonSchemeLabel(comparisonWeaponConfig(comparisonAWeaponIndex),comparisonAQuality,comparisonAAffix), bLabel=comparisonSchemeLabel(comparisonWeaponConfig(comparisonBWeaponIndex),comparisonBQuality,comparisonBAffix);
+        const rows=[["护甲",`差距（${metricLabel}）`,aLabel,"A 击杀枪数",bLabel,"B 击杀枪数"]];
+        comparisonResults.forEach(row=>rows.push([armorExportName(row),Math.abs(row.aValue-row.bValue),row.aValue,row.aShots,row.bValue,row.bShots]));
+        downloadWorkbook(`DMZ-方案对比-${comparisonWeaponConfig(comparisonAWeaponIndex).name}-${comparisonWeaponConfig(comparisonBWeaponIndex).name}-${comparisonDistance.toFixed(1)}米`,[{name:"方案对比",rows},{name:"导出条件",rows:currentMetadata([["方案 A",aLabel],["方案 B",bLabel],["对比射程",`${comparisonDistance.toFixed(1)} 米`]])}]);
         return;
       }
       const columns=renderedColumns.length?renderedColumns:activeColumns();

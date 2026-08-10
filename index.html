@@ -32,9 +32,9 @@
               <span class="announcement-title-row">
                 <span class="announcement-title">更新公告</span>
                 <span class="announcement-badge">最新</span>
-                <time class="announcement-summary-date" datetime="2026-08-04">8 月 4 日</time>
+                <time class="announcement-summary-date" datetime="2026-08-11">8 月 11 日</time>
               </span>
-              <span class="announcement-latest">优化 150% 显示比例下的界面布局</span>
+              <span class="announcement-latest">重做精确射程排行，并扩展双方案对比</span>
             </span>
           </span>
           <span class="announcement-chevron" aria-hidden="true"></span>
@@ -42,8 +42,18 @@
         <div class="announcement-content">
           <article class="announcement-item">
             <div class="announcement-item-head">
-              <time class="announcement-date" datetime="2026-08-04">8 月 4 日</time>
+              <time class="announcement-date" datetime="2026-08-11">8 月 11 日</time>
               <span class="announcement-version">最新更新</span>
+            </div>
+            <ul class="announcement-list">
+              <li>重做枪械排行：支持独立品质、无词条 / 单伤最优 / 双伤最优和精确射程滑块</li>
+              <li>扩展双方案对比：支持不同枪械、品质、具体词条和射程之间的枪数 / TTK 对比</li>
+              <li>统一下拉菜单样式，长词条列表限制高度并支持上下滚动</li>
+            </ul>
+          </article>
+          <article class="announcement-item">
+            <div class="announcement-item-head">
+              <time class="announcement-date" datetime="2026-08-04">8 月 4 日</time>
             </div>
             <ul class="announcement-list">
               <li>优化 150% 显示比例下的界面布局，减少换行</li>
@@ -94,8 +104,8 @@
               <option value="究" selected>究</option>
             </select>
           </div>
-          <div class="field">
-            <label for="damageRange">射程区间 / 单发伤害</label>
+          <div id="damageRangeField" class="field">
+            <label id="damageRangeLabel" for="damageRange">射程区间 / 单发伤害</label>
             <select id="damageRange">
               <option value="0">约 0 – 8.7 米 · 23 伤害</option>
             </select>
@@ -141,7 +151,7 @@
         </div>
         <div class="panel results">
           <div class="result-head">
-            <div><h2>护甲 × 词条击杀枪数</h2><span id="status">等待计算</span><span id="recommendationLegend" class="recommendation-legend" hidden>金色：最广泛场景下的最优解，最推荐</span></div>
+            <div class="result-title"><h2>护甲 × 词条击杀枪数</h2><span id="status">等待计算</span><span id="recommendationLegend" class="recommendation-legend" hidden>金色：最广泛场景下的最优解，最推荐</span></div>
             <div class="view-toggle affix-toggle" aria-label="词条数量">
               <button id="singleAffix" class="active" type="button">单伤</button>
               <button id="doubleAffix" type="button">双伤</button>
@@ -160,6 +170,20 @@
               <button id="allView" type="button">总表</button>
             </div>
             <button id="exportTable" class="export-button" type="button">导出表格</button>
+          </div>
+          <div id="rankingPanel" class="ranking-panel" hidden>
+            <label class="ranking-quality"><span>枪械品质</span><select id="rankingQuality"><option value="紫">紫</option><option value="橙">橙</option><option value="红">红</option><option value="究" selected>究</option></select></label>
+            <div class="ranking-affix-field"><span>排行词条</span><div id="rankingAffixControls" class="view-toggle ranking-affix-toggle" aria-label="排行词条类型">
+              <button id="rankingNoAffix" type="button">无词条</button>
+              <button id="rankingSingleAffix" class="active" type="button">单伤最优</button>
+              <button id="rankingDoubleAffix" type="button">双伤最优</button>
+            </div></div>
+            <div id="rankingDistanceField" class="ranking-distance-field"><div class="ranking-distance-head"><label for="rankingDistance">排行射程</label><output id="rankingDistanceValue" for="rankingDistance">0.0 米</output></div><input id="rankingDistance" type="range" min="0" max="10000" step="1" value="0"></div>
+          </div>
+          <div id="comparisonPanel" class="comparison-panel" hidden>
+            <div class="comparison-scheme comparison-scheme-a"><strong>A</strong><label><span>枪械</span><div id="comparisonAWeaponRow" class="comparison-weapon-select"><select id="comparisonAWeapon" hidden></select><button id="comparisonAWeaponTrigger" class="comparison-weapon-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">选择枪械</button><div id="comparisonAWeaponMenu" class="comparison-weapon-menu" role="listbox"></div></div></label><label><span>品质</span><select id="comparisonAQuality"></select></label><label><span>词条</span><select id="comparisonAAffix"></select></label></div>
+            <div class="comparison-scheme comparison-scheme-b"><strong>B</strong><label><span>枪械</span><div id="comparisonBWeaponRow" class="comparison-weapon-select"><select id="comparisonBWeapon" hidden></select><button id="comparisonBWeaponTrigger" class="comparison-weapon-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">选择枪械</button><div id="comparisonBWeaponMenu" class="comparison-weapon-menu" role="listbox"></div></div></label><label><span>品质</span><select id="comparisonBQuality"></select></label><label><span>词条</span><select id="comparisonBAffix"></select></label></div>
+            <div class="comparison-distance"><div class="ranking-distance-head"><label for="comparisonDistance">对比射程</label><output id="comparisonDistanceValue" for="comparisonDistance">0.0 米</output></div><input id="comparisonDistance" type="range" min="0" max="10000" step="1" value="0"></div>
           </div>
           <div class="table-wrap"><table id="resultTable"><thead></thead><tbody></tbody></table></div>
           <div id="curvePanel" class="curve-panel">
@@ -282,26 +306,30 @@
         <ul>
           <li>枪械品质：通常统一使用当前选择的品质；若超过某把枪械的可用品质上限，则该枪使用自己的最高可用品质参与排行。例如选择究品质时，J358 使用橙品质、USS9 使用红品质。</li>
           <li>主要命中与随机命中：所有枪械统一采用当前命中设定。</li>
-          <li>词条类型：进入排行后可在“无词条 / 单伤 / 双伤”之间选择。</li>
+          <li>词条类型：进入排行后可在“无词条 / 单伤最优 / 双伤最优”之间选择；每把枪都会使用对应类型中适合当前护甲和命中条件的最优具体词条。</li>
         </ul>
 
-        <h3>射程段数</h3>
-        <p>排行按射程段序号比较，而不是按相同米数比较。选择第一段时所有枪械使用自己的第一段伤害，选择第二段时使用各自第二段伤害。</p>
-        <p>若选择的段数超过某把枪械的总段数，该枪械使用自己的最后一段。例如选择第五段时，只有四段的枪械会使用第四段参与排行。</p>
+        <h3>精确射程选择</h3>
+        <p>进入排行后，表格标题下方会显示紧凑的射程滑块，当前精确距离显示在滑块右上角；滑轨不再显示额外刻度文字。</p>
+        <p>每次调整都会立即刷新最初的“护甲 × 枪械名次”表格；每把枪严格使用该具体距离所属的真实伤害射程段。超过某把枪配置的最远射程后，该枪不再进入排行。</p>
+
+        <h3>排行表格</h3>
+        <p>每种护甲单独列出当前具体射程下仍有效的全部枪械，显示枪械名称和 TTK，可左右滚动查看完整名次。</p>
 
         <h3>TTK 与排序</h3>
-        <p>每把枪先在选定词条类型中取得最佳目标枪数，再按自身射击间隔计算：</p>
+        <p>每把枪在自己的当前伤害射程段中取得最佳目标枪数，再按自身射击间隔计算：</p>
         <div class="formula">TTK = (目标枪数 − 1) × 射击间隔</div>
-        <p>优先按 TTK 从低到高排序；TTK 相同时，枪数更少者优先。</p>
+        <p>具体射程的表格按 TTK 从低到高排序；TTK 相同时，枪数更少者优先。</p>
       </div>
     </dialog>
-    <p class="site-counter" id="busuanzi_container_site_pv">页面访问量 <span id="busuanzi_value_site_pv">统计中…</span> 次--求求了点个star⭐️吧</p>
+    <p class="site-counter" id="busuanzi_container_site_pv">页面访问量 <span id="busuanzi_value_site_pv">统计中…</span> 次--求求了右上角点个star⭐️吧</p>
   </main>
 
   <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
   <script src="assets/js/weapons-data.js"></script>
   <script src="assets/js/domain/config.js"></script>
   <script src="assets/js/ui/random-inputs.js"></script>
+  <script src="assets/js/ui/custom-select.js"></script>
   <script src="assets/js/domain/calculator.js"></script>
   <script src="assets/js/data/weapon-repository.js"></script>
   <script src="assets/js/app/state.js"></script>
@@ -310,6 +338,7 @@
   <script src="assets/js/ui/controls.js"></script>
   <script src="assets/js/ui/layout.js"></script>
   <script src="assets/js/features/ranking.js"></script>
+  <script src="assets/js/features/comparison.js"></script>
   <script src="assets/js/ui/results-table.js"></script>
   <script src="assets/js/features/export.js"></script>
   <script src="assets/js/app/render.js"></script>

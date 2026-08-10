@@ -9,6 +9,17 @@
     let metricMode = "shots";
     let rankingResults = [];
     let rankingAffixMode = "single";
+    let rankingQuality = "究";
+    let rankingDistance = 0;
+    let comparisonResults = [];
+    let comparisonDistance = 0;
+    let comparisonAWeaponIndex = null;
+    let comparisonBWeaponIndex = null;
+    let comparisonAQuality = "";
+    let comparisonBQuality = "";
+    let comparisonAAffix = "";
+    let comparisonBAffix = "";
+    let standardRangeIndex = 0;
     let affixMode = "single";
     let curveAffixName = "无词条";
     let curveResizeFrame = 0;

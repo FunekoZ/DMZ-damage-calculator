@@ -21,6 +21,8 @@
     function updateDamageRanges(){
       const select=document.querySelector("#damageRange");
       select.replaceChildren(...weaponConfig.damageRanges.map((range,index)=>new Option(rangeLabel(range),String(index))));
+      standardRangeIndex=Math.min(standardRangeIndex,weaponConfig.damageRanges.length-1);
+      select.value=String(standardRangeIndex);
     }
     function setWeapon(weapon){
       weaponConfig=validateWeapon(weapon);

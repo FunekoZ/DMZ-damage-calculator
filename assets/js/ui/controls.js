@@ -15,6 +15,8 @@
       }
       document.querySelector("#mainHit").value=mainHit;
       document.querySelector("#randomPreset").value=preset;
+      syncCustomSelect("#mainHit");
+      syncCustomSelect("#randomPreset");
       applyRandomPreset(preset);
     }
     document.querySelector("#recommendPreset").addEventListener("click",()=>{
@@ -28,6 +30,7 @@
       [...qualitySelect.options].forEach(option=>option.disabled=(j358&&["红","究"].includes(option.value))||(uss9&&option.value==="究"));
       if(j358&&["红","究"].includes(qualitySelect.value)) qualitySelect.value="橙";
       if(uss9&&qualitySelect.value==="究") qualitySelect.value="红";
+      syncCustomSelect(qualitySelect);
       updateAffixAvailability();
     }
     function syncWeaponPicker(index){
@@ -70,25 +73,32 @@
     });
 
     function updateAffixAvailability(){
-      const quality=document.querySelector("#gunQuality").value;
-      const ranking=metricMode==="ranking", orange=quality==="橙", purple=quality==="紫";
-      const buttonIds=ranking
-        ?{none:"singleAffix",single:"doubleAffix",double:"compareAffix"}
-        :{single:"singleAffix",double:"doubleAffix",compare:"compareAffix",curve:"curveAffix"};
-      if(ranking){
-        if(purple) rankingAffixMode="none";
-        else if(orange&&rankingAffixMode==="double") rankingAffixMode="single";
-      } else if((orange||purple)&&!["single","curve"].includes(affixMode)){
+      const ranking=metricMode==="ranking", quality=ranking?rankingQuality:document.querySelector("#gunQuality").value;
+      const orange=quality==="橙", purple=quality==="紫";
+      const buttonIds={single:"singleAffix",double:"doubleAffix",compare:"compareAffix",curve:"curveAffix"};
+      if(!ranking&&affixMode!=="compare"&&(orange||purple)&&!["single","curve"].includes(affixMode)){
         affixMode="single";
       }
+      if(ranking&&purple) rankingAffixMode="none";
+      else if(ranking&&orange&&rankingAffixMode==="double") rankingAffixMode="single";
       ["singleAffix","doubleAffix","compareAffix","curveAffix"].forEach(id=>{
-        const mode=ranking?rankingAffixMode:affixMode;
-        document.querySelector(`#${id}`).classList.toggle("active",id===buttonIds[mode]);
+        document.querySelector(`#${id}`).classList.toggle("active",!ranking&&id===buttonIds[affixMode]);
       });
-      document.querySelector("#singleAffix").disabled=ranking?false:purple;
-      document.querySelector("#doubleAffix").disabled=ranking?purple:orange||purple;
-      document.querySelector("#compareAffix").disabled=ranking?orange||purple:orange||purple;
+      if(ranking&&purple) rankingAffixMode="none";
+      else if(ranking&&orange&&rankingAffixMode==="double") rankingAffixMode="single";
+      document.querySelector("#rankingNoAffix").classList.toggle("active",rankingAffixMode==="none");
+      document.querySelector("#rankingSingleAffix").classList.toggle("active",rankingAffixMode==="single");
+      document.querySelector("#rankingDoubleAffix").classList.toggle("active",rankingAffixMode==="double");
+      document.querySelector("#singleAffix").disabled=ranking||purple;
+      document.querySelector("#doubleAffix").disabled=ranking||orange||purple;
+      document.querySelector("#compareAffix").disabled=false;
       document.querySelector("#curveAffix").disabled=false;
+      document.querySelector("#rankingAffixControls").hidden=!ranking;
+      document.querySelector("#rankingQuality").value=rankingQuality;
+      syncCustomSelect("#rankingQuality");
+      document.querySelector("#rankingNoAffix").disabled=false;
+      document.querySelector("#rankingSingleAffix").disabled=purple;
+      document.querySelector("#rankingDoubleAffix").disabled=orange||purple;
       document.querySelector("#curveAffix").hidden=false;
       document.querySelector("#curveHelpWrap").hidden=false;
       if(!ranking&&affixMode==="curve") syncCurveAffixOptions();
@@ -101,7 +111,10 @@
       autoRenderTimer=setTimeout(render,500);
     }
 
-    document.querySelector("#damageRange").addEventListener("change",autoRender);
+    document.querySelector("#damageRange").addEventListener("change",()=>{
+      standardRangeIndex=+document.querySelector("#damageRange").value||0;
+      autoRender();
+    });
     document.querySelector("#gunQuality").addEventListener("change",()=>{
       updateAffixAvailability();
       document.querySelector("#weaponSummary").textContent=`${weaponConfig.name} · ${document.querySelector("#gunQuality").value}`;
@@ -113,6 +126,7 @@
       document.querySelectorAll("[data-random]").forEach(select=>{
         select.disabled=false;
         select.value=String(preset[select.dataset.random]);
+        syncCustomSelect(select);
       });
     }
     document.querySelector("#mainHit").addEventListener("change",autoRender);
@@ -122,6 +136,7 @@
     });
     document.querySelectorAll("[data-random]").forEach(select=>select.addEventListener("change",()=>{
       document.querySelector("#randomPreset").value="custom";
+      syncCustomSelect("#randomPreset");
       autoRender();
     }));
 
