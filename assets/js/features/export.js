@@ -29,16 +29,16 @@
     }
     function armorExportName(row){ return `${row.quality}甲 ${row.plates}格${row.variant?` ${row.variant}`:""}`; }
     function currentMetadata(extra=[]){
-      const mainHit=document.querySelector("#mainHit").value, random=randomHits();
+      const mainHit=document.querySelector("#mainHit").value, random=randomHits(), comparing=affixMode==="compare"&&metricMode!=="ranking";
       const randomText=Object.entries(random).filter(([,count])=>count).map(([region,count])=>`${regionLabels[region]}×${count}`).join(" / ")||"无";
       return [
         ["项目","值"],
-        ["枪械",metricMode==="ranking"?"全部枪械":weaponConfig.name],
-        ["枪械品质",document.querySelector("#gunQuality").value],
+        ["枪械",metricMode==="ranking"?"全部枪械":comparing?"由方案 A / B 独立选择":weaponConfig.name],
+        ["枪械品质",comparing?"由方案 A / B 独立选择":document.querySelector("#gunQuality").value],
         ["主要命中",sceneLabels[mainHit]],
         ["随机命中",randomText],
         ["当前指标",metricMode==="ttk"?"TTK（ms）":metricMode==="ranking"?"枪械排行":"击杀枪数"],
-        ["射击间隔（ms）",metricMode==="ranking"?"各枪械独立":weaponConfig.shotIntervalMs],
+        ["射击间隔（ms）",metricMode==="ranking"?"各枪械独立":comparing?"方案 A / B 各自独立":weaponConfig.shotIntervalMs],
         ...extra
       ];
     }

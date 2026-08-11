@@ -55,6 +55,7 @@
       closeWeaponPicker();
       setWeapon(weapons[index]);
       applyWeaponQualityLimit();
+      if(affixMode==="compare"||metricMode==="ranking") return;
       applyRecommendedPreset();
       autoRender();
     }
