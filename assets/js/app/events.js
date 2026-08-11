@@ -126,13 +126,8 @@
       if(!weapons[index]) return;
       document.querySelector(`#comparison${side}WeaponRow`).classList.remove("open");
       document.querySelector(`#comparison${side}WeaponTrigger`).setAttribute("aria-expanded","false");
-      if(side==="A"){
-        comparisonAWeaponIndex=index; comparisonAQuality=comparisonQualities(comparisonWeaponConfig(index)).at(-1);
-        comparisonAAffix=comparisonBestConcreteAffix(comparisonWeaponConfig(index),comparisonAQuality,"single");
-      } else {
-        comparisonBWeaponIndex=index; comparisonBQuality=comparisonQualities(comparisonWeaponConfig(index)).at(-1);
-        comparisonBAffix=comparisonBestConcreteAffix(comparisonWeaponConfig(index),comparisonBQuality,comparisonBQuality==="橙"?"single":"double");
-      }
+      if(side==="A") comparisonAWeaponIndex=index;
+      else comparisonBWeaponIndex=index;
       syncComparisonWeaponPicker(side,index);
       if(comparisonAWeaponIndex!==comparisonBWeaponIndex) setMetricMode("ttk"); else refreshComparison();
     }
@@ -150,8 +145,8 @@
       if(event.target.closest(".comparison-weapon-select")) return;
       document.querySelectorAll(".comparison-weapon-select.open").forEach(row=>{ row.classList.remove("open"); row.querySelector(".comparison-weapon-trigger").setAttribute("aria-expanded","false"); });
     });
-    document.querySelector("#comparisonAQuality").addEventListener("change",event=>{comparisonAQuality=event.target.value;comparisonAAffix=comparisonBestConcreteAffix(comparisonWeaponConfig(comparisonAWeaponIndex),comparisonAQuality,"single");refreshComparison();});
-    document.querySelector("#comparisonBQuality").addEventListener("change",event=>{comparisonBQuality=event.target.value;comparisonBAffix=comparisonBestConcreteAffix(comparisonWeaponConfig(comparisonBWeaponIndex),comparisonBQuality,comparisonBQuality==="橙"?"single":"double");refreshComparison();});
+    document.querySelector("#comparisonAQuality").addEventListener("change",event=>{comparisonAQuality=event.target.value;refreshComparison();});
+    document.querySelector("#comparisonBQuality").addEventListener("change",event=>{comparisonBQuality=event.target.value;refreshComparison();});
     document.querySelector("#comparisonAAffix").addEventListener("change",event=>{comparisonAAffix=event.target.value;refreshComparison();});
     document.querySelector("#comparisonBAffix").addEventListener("change",event=>{comparisonBAffix=event.target.value;refreshComparison();});
     document.querySelector("#comparisonDistance").addEventListener("input",event=>{comparisonDistance=comparisonSliderToDistance(event.target.value);refreshComparison();});
