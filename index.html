@@ -32,9 +32,9 @@
               <span class="announcement-title-row">
                 <span class="announcement-title">更新公告</span>
                 <span class="announcement-badge">最新</span>
-                <time class="announcement-summary-date" datetime="2026-08-11">8 月 11 日</time>
+                <time class="announcement-summary-date" datetime="2026-08-12">8 月 12 日</time>
               </span>
-              <span class="announcement-latest">重做精确射程排行，并扩展双方案对比</span>
+              <span class="announcement-latest">优化排行追踪、对比表和窄屏操作体验</span>
             </span>
           </span>
           <span class="announcement-chevron" aria-hidden="true"></span>
@@ -42,8 +42,19 @@
         <div class="announcement-content">
           <article class="announcement-item">
             <div class="announcement-item-head">
-              <time class="announcement-date" datetime="2026-08-11">8 月 11 日</time>
+              <time class="announcement-date" datetime="2026-08-12">8 月 12 日</time>
               <span class="announcement-version">最新更新</span>
+            </div>
+            <ul class="announcement-list">
+              <li>优化排行表：使用两行紧凑单元格，并支持点击标黄同一武器在各护甲下的排名</li>
+              <li>精简方案对比表，合并重复列并改善极窄屏下的固定列与自适应显示</li>
+              <li>排行与对比射程支持直接输入具体数值，随机命中数字下拉框更加紧凑</li>
+              <li>重排结果模式按钮和说明入口，并同步更新排行、曲线说明内容</li>
+            </ul>
+          </article>
+          <article class="announcement-item">
+            <div class="announcement-item-head">
+              <time class="announcement-date" datetime="2026-08-11">8 月 11 日</time>
             </div>
             <ul class="announcement-list">
               <li>重做枪械排行：支持独立品质、无词条 / 单伤最优 / 双伤最优和精确射程滑块</li>
@@ -153,18 +164,16 @@
           <div class="result-head">
             <div class="result-title"><h2 id="resultTitle">单伤词条击杀枪数</h2><span id="status">等待计算</span><span id="recommendationLegend" class="recommendation-legend" hidden>金色：最广泛场景下的最优解，最推荐</span></div>
             <div class="result-actions">
-              <div class="view-toggle affix-toggle" aria-label="词条数量">
+              <div class="view-toggle affix-toggle" aria-label="结果模式">
               <button id="singleAffix" class="active" type="button">单伤</button>
               <button id="doubleAffix" type="button">双伤</button>
               <button id="compareAffix" type="button">对比</button>
-              <button id="curveAffix" type="button">曲线</button>
-              <span id="curveHelpWrap" class="ranking-help"><button id="curveHelp" class="ranking-help-button" type="button" aria-label="查看曲线说明" title="查看曲线说明">?</button></span>
+              <span class="result-mode-button"><button id="rankingMetric" type="button">排行</button><span class="ranking-help"><button id="rankingHelp" class="ranking-help-button" type="button" aria-label="查看排行说明" title="查看排行说明">?</button></span></span>
+              <span class="result-mode-button"><button id="curveAffix" type="button">曲线</button><span id="curveHelpWrap" class="ranking-help"><button id="curveHelp" class="ranking-help-button" type="button" aria-label="查看曲线说明" title="查看曲线说明">?</button></span></span>
             </div>
             <div class="view-toggle metric-toggle" aria-label="计算指标">
               <button id="shotsMetric" class="active" type="button">击杀枪数</button>
               <button id="ttkMetric" type="button">TTK</button>
-              <button id="rankingMetric" type="button">排行</button>
-              <span class="ranking-help"><button id="rankingHelp" class="ranking-help-button" type="button" aria-label="查看排行说明" title="查看排行说明">?</button></span>
             </div>
             <div class="view-toggle display-toggle" aria-label="结果展示方式">
               <button id="bestView" class="active" type="button">最优词条</button>
@@ -281,9 +290,11 @@
 
         <h3>选择词条与指标</h3>
         <ul>
+          <li>“曲线”入口位于结果模式按钮组中；按钮右上角的问号可随时重新打开本说明。</li>
           <li>进入曲线后，可在图表上方选择无词条、单伤或当前品质允许的双伤词条。</li>
           <li>切换词条后会立即重新计算并绘制。</li>
           <li>“击杀枪数 / TTK”按钮控制纵轴指标；TTK 仍按首枪 0ms 计算。</li>
+          <li>滑块右上角的射程数值输入功能只用于排行和方案对比；曲线会直接展示枪械配置的完整射程分段。</li>
         </ul>
 
         <h3>阶梯与视觉偏移</h3>
@@ -302,7 +313,7 @@
       </div>
       <div class="dialog-body">
         <h3>排行比较什么</h3>
-        <p>排行会使用当前条件计算全部枪械，并按每种护甲列出所有枪械的完整 TTK 名次，可左右滚动查看。左侧“选择枪械”只用于普通计算和决定可选择的射程段数，不会限制排行中的枪械范围。</p>
+        <p>“排行”入口位于结果模式按钮组的“对比”和“曲线”之间，按钮右上角的问号可随时重新打开本说明。排行会使用当前条件计算全部枪械，并按每种护甲列出所有枪械的完整 TTK 名次。左侧“选择枪械”只用于普通计算，不会限制排行中的枪械范围。</p>
 
         <h3>仍然生效的设置</h3>
         <ul>
@@ -312,11 +323,12 @@
         </ul>
 
         <h3>精确射程选择</h3>
-        <p>进入排行后，表格标题下方会显示紧凑的射程滑块，当前精确距离显示在滑块右上角；滑轨不再显示额外刻度文字。</p>
-        <p>每次调整都会立即刷新最初的“护甲 × 枪械名次”表格；每把枪严格使用该具体距离所属的真实伤害射程段。超过某把枪配置的最远射程后，该枪不再进入排行。</p>
+        <p>进入排行后，表格标题下方会显示射程滑块。右上角的数值是常驻输入框，可以直接输入精确到 0.1 米的距离；按 Enter 或移出输入框应用，超出范围时自动限制到有效射程。</p>
+        <p>每次调整都会立即刷新排行表；每把枪严格使用该具体距离所属的真实伤害射程段。超过某把枪配置的最远射程后，该枪不再进入排行。</p>
 
-        <h3>排行表格</h3>
-        <p>每种护甲单独列出当前具体射程下仍有效的全部枪械，显示枪械名称和 TTK，可左右滚动查看完整名次。</p>
+        <h3>排行表格与武器高亮</h3>
+        <p>每种护甲单独列出当前距离下仍有效的全部枪械。单元格使用两行紧凑布局，第一行显示枪械名称，第二行显示 TTK；表格宽度超过结果区域时可左右滚动查看完整名次。</p>
+        <p>鼠标移到武器单元格上会显示浅黄色反馈和“点击高亮当前武器”提示。点击后，该武器在所有护甲行中的单元格都会使用与对比表最佳值一致的黄色标记，便于追踪不同护甲下的排名；再次点击可取消高亮，点击其他武器则切换目标。</p>
 
         <h3>TTK 与排序</h3>
         <p>每把枪在自己的当前伤害射程段中取得最佳目标枪数，再按自身射击间隔计算：</p>

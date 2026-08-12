@@ -11,6 +11,7 @@
     let rankingAffixMode = "single";
     let rankingQuality = "究";
     let rankingDistance = 0;
+    let rankingHighlightedWeaponIndex = null;
     let comparisonResults = [];
     let comparisonDistance = 0;
     let comparisonAWeaponIndex = null;

@@ -129,8 +129,8 @@
       .result-actions .export-button { grid-column: 3; width: 100%; }
       .ranking-distance-field { width: 100%; }
       .view-toggle { display: grid; overflow: visible; width: 100%; grid-auto-flow: row; }
-      .affix-toggle { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-      .metric-toggle { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .affix-toggle { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .metric-toggle { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .display-toggle { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .view-toggle > button { width: 100%; min-width: 0; height: 36px; padding: 0 5px; }
       .ranking-help { right: 1px; transform: translate(35%,-45%); }

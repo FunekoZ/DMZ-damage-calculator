@@ -211,6 +211,13 @@
       curveResizeFrame=requestAnimationFrame(drawCurveChart);
     });
     document.querySelector("#resultTable").addEventListener("click",event=>{
+      const rankingCell=event.target.closest(".ranking-cell");
+      if(rankingCell&&metricMode==="ranking"){
+        const weaponIndex=+rankingCell.dataset.rankingWeaponIndex;
+        rankingHighlightedWeaponIndex=rankingHighlightedWeaponIndex===weaponIndex?null:weaponIndex;
+        drawRankingTable();
+        return;
+      }
       const trigger=event.target.closest(".reason-trigger");
       document.querySelectorAll(".reason-marker.open").forEach(marker=>{
         if(!trigger||marker!==trigger.closest(".reason-marker")) marker.classList.remove("open");
