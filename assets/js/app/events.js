@@ -1,3 +1,16 @@
+    function syncResultTitle(){
+      const title=document.querySelector("#resultTitle");
+      if(metricMode==="ranking"){
+        const affix=rankingAffixMode==="none"?"无词条":rankingAffixMode==="single"?"单伤最优":"双伤最优";
+        title.textContent=`${affix}枪械 TTK 排行`;
+        return;
+      }
+      const metric=metricMode==="ttk"?"TTK":"击杀枪数";
+      if(affixMode==="compare"){ title.textContent=`方案${metric}对比`; return; }
+      if(affixMode==="curve"){ title.textContent=`${metric}曲线`; return; }
+      const mode=document.querySelector("#gunQuality").value==="紫"?"无词条":affixMode==="double"?"双伤词条":"单伤词条";
+      title.textContent=`${mode}${metric}`;
+    }
     function setAffixMode(mode){
       const quality=document.querySelector("#gunQuality").value;
       if(mode==="curve"){
@@ -13,6 +26,7 @@
           document.querySelector("#metricSummary").textContent="击杀枪数";
         }
         affixMode="curve";
+        syncResultTitle();
         document.querySelector("#comparisonPanel").hidden=true;
         document.querySelector("#damageRangeField").hidden=false;
         updateAffixAvailability();
@@ -39,6 +53,7 @@
       }
       if(quality==="紫"&&mode!=="compare" || (quality==="橙" && !["single","compare"].includes(mode))) return;
       affixMode=mode;
+      syncResultTitle();
       if(mode==="compare"&&comparisonAWeaponIndex===null){
         comparisonAWeaponIndex=+document.querySelector("#weaponSelect").value||0;
         comparisonBWeaponIndex=comparisonAWeaponIndex;
@@ -64,12 +79,14 @@
     document.querySelector("#rankingSingleAffix").addEventListener("click",()=>setRankingAffixMode("single"));
     document.querySelector("#rankingDoubleAffix").addEventListener("click",()=>setRankingAffixMode("double"));
     document.querySelector("#curveAffix").addEventListener("click",()=>setAffixMode("curve"));
+    syncResultTitle();
     function setRankingAffixMode(mode){
       if(metricMode!=="ranking") return;
       const quality=rankingQuality;
       if((quality==="紫"&&mode!=="none")||(quality==="橙"&&mode==="double")) return;
       rankingAffixMode=mode;
       updateAffixAvailability();
+      syncResultTitle();
       render();
     }
     document.querySelector("#curveAffixSelect").addEventListener("change",event=>{
@@ -94,6 +111,7 @@
       if(!ranking&&wasRanking) updateDamageRanges();
       if(ranking&&affixMode==="curve") affixMode="single";
       updateAffixAvailability();
+      syncResultTitle();
       document.querySelector("#bestView").disabled=ranking||["compare","curve"].includes(affixMode);
       document.querySelector("#allView").disabled=ranking||affixMode==="curve";
       document.querySelector("#exportTable").disabled=affixMode==="curve"&&!ranking;
@@ -116,11 +134,19 @@
       if(metricMode==="ranking") drawRankingTable();
     }
     document.querySelector("#rankingDistance").addEventListener("input",event=>setRankingDistance(rankingSliderToDistance(event.target.value)));
+    const commitDistanceInput=(input,setDistance,currentDistance)=>{
+      const value=input.value.trim()===""?NaN:Number(input.value);
+      if(Number.isFinite(value)) setDistance(value);
+      input.value=currentDistance().toFixed(1);
+    };
+    const rankingDistanceValue=document.querySelector("#rankingDistanceValue");
+    rankingDistanceValue.addEventListener("change",()=>commitDistanceInput(rankingDistanceValue,setRankingDistance,()=>rankingDistance));
+    rankingDistanceValue.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();rankingDistanceValue.blur();}else if(event.key==="Escape"){rankingDistanceValue.value=rankingDistance.toFixed(1);rankingDistanceValue.blur();}});
     document.querySelector("#rankingQuality").addEventListener("change",event=>{
       rankingQuality=event.target.value;
       if(rankingQuality==="紫") rankingAffixMode="none";
       else if(rankingQuality==="橙"&&rankingAffixMode==="double") rankingAffixMode="single";
-      updateAffixAvailability(); render();
+      updateAffixAvailability(); syncResultTitle(); render();
     });
     function selectComparisonWeapon(side,index){
       if(!weapons[index]) return;
@@ -150,6 +176,9 @@
     document.querySelector("#comparisonAAffix").addEventListener("change",event=>{comparisonAAffix=event.target.value;refreshComparison();});
     document.querySelector("#comparisonBAffix").addEventListener("change",event=>{comparisonBAffix=event.target.value;refreshComparison();});
     document.querySelector("#comparisonDistance").addEventListener("input",event=>{comparisonDistance=comparisonSliderToDistance(event.target.value);refreshComparison();});
+    const comparisonDistanceValue=document.querySelector("#comparisonDistanceValue");
+    comparisonDistanceValue.addEventListener("change",()=>commitDistanceInput(comparisonDistanceValue,value=>{comparisonDistance=Math.round(Math.max(0,Math.min(comparisonMaxDistance(),Number(value)||0))*10)/10;refreshComparison();},()=>comparisonDistance));
+    comparisonDistanceValue.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();comparisonDistanceValue.blur();}else if(event.key==="Escape"){comparisonDistanceValue.value=comparisonDistance.toFixed(1);comparisonDistanceValue.blur();}});
     const curveGuideDialog=document.querySelector("#curveGuideDialog");
     document.querySelector("#curveHelp").addEventListener("click",()=>curveGuideDialog.showModal());
     document.querySelector("#curveGuideClose").addEventListener("click",()=>curveGuideDialog.close());
@@ -182,6 +211,13 @@
       curveResizeFrame=requestAnimationFrame(drawCurveChart);
     });
     document.querySelector("#resultTable").addEventListener("click",event=>{
+      const rankingCell=event.target.closest(".ranking-cell");
+      if(rankingCell&&metricMode==="ranking"){
+        const weaponIndex=+rankingCell.dataset.rankingWeaponIndex;
+        rankingHighlightedWeaponIndex=rankingHighlightedWeaponIndex===weaponIndex?null:weaponIndex;
+        drawRankingTable();
+        return;
+      }
       const trigger=event.target.closest(".reason-trigger");
       document.querySelectorAll(".reason-marker.open").forEach(marker=>{
         if(!trigger||marker!==trigger.closest(".reason-marker")) marker.classList.remove("open");

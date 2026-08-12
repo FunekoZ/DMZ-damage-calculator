@@ -103,7 +103,9 @@
       comparisonBAffix=syncComparisonAffixSelect("comparisonBAffix",comparisonBQuality,comparisonBAffix);
       comparisonDistance=Math.max(0,Math.min(comparisonMaxDistance(),comparisonDistance));
       document.querySelector("#comparisonDistance").value=String(comparisonDistanceToSlider(comparisonDistance));
-      document.querySelector("#comparisonDistanceValue").textContent=`${comparisonDistance.toFixed(1)} 米`;
+      const valueInput=document.querySelector("#comparisonDistanceValue");
+      valueInput.max=String(comparisonMaxDistance());
+      if(document.activeElement!==valueInput) valueInput.value=comparisonDistance.toFixed(1);
     }
     function comparisonResult(config,quality,column,armorConfig,mainHit,random,index){
       const range=comparisonRange(config,comparisonDistance), cfg={...config,quality,damage:+range.damage}, slots=sharedShotSlots(cfg,armorConfig,mainHit,[column],random);
@@ -125,13 +127,11 @@
       const table=document.querySelector("#resultTable");
       table.classList.add("compare-table","scheme-compare-table");
       document.querySelector("#recommendationLegend").hidden=true;
-      document.querySelector("thead").innerHTML=`<tr><th>护甲</th><th>差距</th><th class="comparison-a-heading">A</th><th>${aLabel}</th><th class="comparison-b-heading">B</th><th>${bLabel}</th></tr>`;
+      document.querySelector("thead").innerHTML=`<tr><th>护甲</th><th>差距</th><th class="comparison-a-heading"><span class="comparison-column-key">A</span><span class="comparison-column-label" title="${aLabel}">${aLabel}</span></th><th class="comparison-b-heading"><span class="comparison-column-key">B</span><span class="comparison-column-label" title="${bLabel}">${bLabel}</span></th></tr>`;
       document.querySelector("tbody").innerHTML=comparisonResults.map(row=>{
         const gap=Math.abs(row.aValue-row.bValue), aBest=row.aValue<=row.bValue?"best":"", bBest=row.bValue<=row.aValue?"best":"";
         const gapText=gap===0?'<span class="gap-highlight">无差距</span>':row.aValue<row.bValue?`A 减少 <span class="gap-highlight">${comparisonMetricText(gap)}</span>`:`B 减少 <span class="gap-highlight">${comparisonMetricText(gap)}</span>`;
-        const aDetail=metricMode==="ttk"?comparisonMetricText(row.aValue):`${row.aShots} 枪`;
-        const bDetail=metricMode==="ttk"?comparisonMetricText(row.bValue):`${row.bShots} 枪`;
-        return `<tr><td>${armorDisplay(row)}</td><td>${gapText}</td><td class="${aBest}">${comparisonMetricText(row.aValue)}</td><td>${aDetail}</td><td class="${bBest}">${comparisonMetricText(row.bValue)}</td><td>${bDetail}</td></tr>`;
+        return `<tr><td>${armorDisplay(row)}</td><td>${gapText}</td><td class="${aBest}">${comparisonMetricText(row.aValue)}</td><td class="${bBest}">${comparisonMetricText(row.bValue)}</td></tr>`;
       }).join("");
       document.querySelector("#resultTable").style.minWidth=""; document.querySelector("#rangeSummary").textContent=`${comparisonDistance.toFixed(1)} 米`;
       document.querySelector("#status").textContent=`方案 A：${aLabel} · 方案 B：${bLabel} · ${comparisonDistance.toFixed(1)} 米`;

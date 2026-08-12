@@ -46,7 +46,9 @@
       const max=rankingMaxDistance(), slider=document.querySelector("#rankingDistance");
       rankingDistance=Math.max(0,Math.min(max,rankingDistance));
       slider.value=String(rankingDistanceToSlider(rankingDistance));
-      document.querySelector("#rankingDistanceValue").textContent=rankingDistanceText();
+      const valueInput=document.querySelector("#rankingDistanceValue");
+      valueInput.max=String(max);
+      if(document.activeElement!==valueInput) valueInput.value=rankingDistance.toFixed(1);
     }
     function calculateRankings(){
       const quality=rankingQuality, mainHit=document.querySelector("#mainHit").value, random=randomHits();
@@ -68,10 +70,10 @@
       document.querySelector("tbody").innerHTML=rows.map(row=>{
         const cells=[...row.visibleEntries];
         while(cells.length<entryCount) cells.push(null);
-        return `<tr><td>${armorDisplay(row)}</td>${cells.map((entry,index)=>entry?`<td><span class="ranking-entry"><span class="ranking-position">${index+1}</span><span class="ranking-name" title="${entry.name} · ${entry.quality}品质">${entry.name}</span><span class="ranking-ttk">${rankingText(entry.ttk)} ms</span></span></td>`:"<td>—</td>").join("")}</tr>`;
+        return `<tr><td>${armorDisplay(row)}</td>${cells.map((entry,index)=>entry?`<td class="ranking-cell${entry.weaponIndex===rankingHighlightedWeaponIndex?" highlighted":""}" data-ranking-weapon-index="${entry.weaponIndex}" title="${entry.weaponIndex===rankingHighlightedWeaponIndex?"点击取消高亮当前武器":"点击高亮当前武器"}"><span class="ranking-entry"><span class="ranking-position">${index+1}</span><span class="ranking-name" title="${entry.name} · ${entry.quality}品质">${entry.name}</span><span class="ranking-ttk">${rankingText(entry.ttk)} ms</span><span class="ranking-highlight-hint">${entry.weaponIndex===rankingHighlightedWeaponIndex?"点击取消高亮":"点击高亮当前武器"}</span></span></td>`:"<td>—</td>").join("")}</tr>`;
       }).join("");
       const tableWrapWidth=document.querySelector(".table-wrap").clientWidth;
-      document.querySelector("#resultTable").style.minWidth=`${Math.max(tableWrapWidth,156+entryCount*210)}px`;
+      document.querySelector("#resultTable").style.minWidth=`${Math.max(tableWrapWidth,156+entryCount*148)}px`;
       document.querySelector("#rangeSummary").textContent=rankingDistanceText();
       document.querySelector("#status").textContent=`共 ${weapons.length} 把枪械 · ${rankingQuality}品质（或最高品质）· ${rankingAffixMode==="none"?"无词条":rankingAffixMode==="single"?"单伤最优":"双伤最优"} · ${rankingDistanceText()}`;
       requestAnimationFrame(syncDesktopRowHeights);
