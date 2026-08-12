@@ -151,8 +151,9 @@
         </div>
         <div class="panel results">
           <div class="result-head">
-            <div class="result-title"><h2>护甲 × 词条击杀枪数</h2><span id="status">等待计算</span><span id="recommendationLegend" class="recommendation-legend" hidden>金色：最广泛场景下的最优解，最推荐</span></div>
-            <div class="view-toggle affix-toggle" aria-label="词条数量">
+            <div class="result-title"><h2 id="resultTitle">单伤词条击杀枪数</h2><span id="status">等待计算</span><span id="recommendationLegend" class="recommendation-legend" hidden>金色：最广泛场景下的最优解，最推荐</span></div>
+            <div class="result-actions">
+              <div class="view-toggle affix-toggle" aria-label="词条数量">
               <button id="singleAffix" class="active" type="button">单伤</button>
               <button id="doubleAffix" type="button">双伤</button>
               <button id="compareAffix" type="button">对比</button>
@@ -168,8 +169,9 @@
             <div class="view-toggle display-toggle" aria-label="结果展示方式">
               <button id="bestView" class="active" type="button">最优词条</button>
               <button id="allView" type="button">总表</button>
+              </div>
+              <button id="exportTable" class="export-button" type="button">导出表格</button>
             </div>
-            <button id="exportTable" class="export-button" type="button">导出表格</button>
           </div>
           <div id="rankingPanel" class="ranking-panel" hidden>
             <label class="ranking-quality"><span>枪械品质</span><select id="rankingQuality"><option value="紫">紫</option><option value="橙">橙</option><option value="红">红</option><option value="究" selected>究</option></select></label>
@@ -178,12 +180,12 @@
               <button id="rankingSingleAffix" class="active" type="button">单伤最优</button>
               <button id="rankingDoubleAffix" type="button">双伤最优</button>
             </div></div>
-            <div id="rankingDistanceField" class="ranking-distance-field"><div class="ranking-distance-head"><label for="rankingDistance">排行射程</label><output id="rankingDistanceValue" for="rankingDistance">0.0 米</output></div><input id="rankingDistance" type="range" min="0" max="10000" step="1" value="0"></div>
+            <div id="rankingDistanceField" class="ranking-distance-field"><div class="ranking-distance-head"><label for="rankingDistance">排行射程</label><label class="distance-value-editor"><input id="rankingDistanceValue" type="number" min="0" step="0.1" value="0.0" aria-label="输入排行射程"><span>米</span></label></div><input id="rankingDistance" type="range" min="0" max="10000" step="1" value="0"></div>
           </div>
           <div id="comparisonPanel" class="comparison-panel" hidden>
             <div class="comparison-scheme comparison-scheme-a"><strong>A</strong><label><span>枪械</span><div id="comparisonAWeaponRow" class="comparison-weapon-select"><select id="comparisonAWeapon" hidden></select><button id="comparisonAWeaponTrigger" class="comparison-weapon-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">选择枪械</button><div id="comparisonAWeaponMenu" class="comparison-weapon-menu" role="listbox"></div></div></label><label><span>品质</span><select id="comparisonAQuality"></select></label><label><span>词条</span><select id="comparisonAAffix"></select></label></div>
             <div class="comparison-scheme comparison-scheme-b"><strong>B</strong><label><span>枪械</span><div id="comparisonBWeaponRow" class="comparison-weapon-select"><select id="comparisonBWeapon" hidden></select><button id="comparisonBWeaponTrigger" class="comparison-weapon-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">选择枪械</button><div id="comparisonBWeaponMenu" class="comparison-weapon-menu" role="listbox"></div></div></label><label><span>品质</span><select id="comparisonBQuality"></select></label><label><span>词条</span><select id="comparisonBAffix"></select></label></div>
-            <div class="comparison-distance"><div class="ranking-distance-head"><label for="comparisonDistance">对比射程</label><output id="comparisonDistanceValue" for="comparisonDistance">0.0 米</output></div><input id="comparisonDistance" type="range" min="0" max="10000" step="1" value="0"></div>
+            <div class="comparison-distance"><div class="ranking-distance-head"><label for="comparisonDistance">对比射程</label><label class="distance-value-editor"><input id="comparisonDistanceValue" type="number" min="0" step="0.1" value="0.0" aria-label="输入对比射程"><span>米</span></label></div><input id="comparisonDistance" type="range" min="0" max="10000" step="1" value="0"></div>
           </div>
           <div class="table-wrap"><table id="resultTable"><thead></thead><tbody></tbody></table></div>
           <div id="curvePanel" class="curve-panel">

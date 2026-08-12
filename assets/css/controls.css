@@ -37,6 +37,10 @@
     .random-grid { display: grid; grid-template-columns: minmax(0, 1fr) 44px; gap: 5px; align-items: center; margin: 0; }
     .random-grid span { color: #cbd2d7; font-size: 12px; }
     .random-grid select { height: 34px; }
+    .random-grid .custom-select { width: 44px; }
+    .random-grid .custom-select-trigger { height: 34px; padding: 0 7px; }
+    .random-grid .custom-select-menu { right: 0; left: auto; width: 44px; min-width: 44px; padding: 4px; }
+    .random-grid .custom-select-option { min-height: 30px; padding: 4px; text-align: center; }
     .hint { margin: 10px 0 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
     .weapon-select-row { position: relative; width: 100%; }
     #weaponSelect { display: none; }

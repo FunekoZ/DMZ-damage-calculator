@@ -118,6 +118,7 @@
     });
     document.querySelector("#gunQuality").addEventListener("change",()=>{
       updateAffixAvailability();
+      syncResultTitle();
       document.querySelector("#weaponSummary").textContent=`${weaponConfig.name} · ${document.querySelector("#gunQuality").value}`;
       autoRender();
     });

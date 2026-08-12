@@ -46,7 +46,9 @@
       const max=rankingMaxDistance(), slider=document.querySelector("#rankingDistance");
       rankingDistance=Math.max(0,Math.min(max,rankingDistance));
       slider.value=String(rankingDistanceToSlider(rankingDistance));
-      document.querySelector("#rankingDistanceValue").textContent=rankingDistanceText();
+      const valueInput=document.querySelector("#rankingDistanceValue");
+      valueInput.max=String(max);
+      if(document.activeElement!==valueInput) valueInput.value=rankingDistance.toFixed(1);
     }
     function calculateRankings(){
       const quality=rankingQuality, mainHit=document.querySelector("#mainHit").value, random=randomHits();
